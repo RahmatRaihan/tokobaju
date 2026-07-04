@@ -2,6 +2,7 @@ import { Head, useForm, router } from '@inertiajs/react';
 import { Trash2, Upload } from 'lucide-react';
 import { FormEvent, useState, useRef } from 'react';
 import AdminLayout from '@/layouts/AdminLayout';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 interface ImageItem {
     id: number;
@@ -28,6 +29,7 @@ interface Props {
 function ImageManager({ title, items, storeUrl, destroyBase }: { title: string; items: ImageItem[]; storeUrl: string; destroyBase: string }) {
     const fileRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
+    const confirm = useConfirm();
 
     const upload = (file: File) => {
         setUploading(true);
@@ -41,8 +43,10 @@ function ImageManager({ title, items, storeUrl, destroyBase }: { title: string; 
         });
     };
 
-    const destroy = (id: number) => {
-        if (confirm('Remove this image?')) router.delete(`${destroyBase}/${id}`, { preserveScroll: true });
+    const destroy = async (id: number) => {
+        if (await confirm({ message: 'Remove this image?', danger: true, confirmText: 'Remove' })) {
+            router.delete(`${destroyBase}/${id}`, { preserveScroll: true });
+        }
     };
 
     return (

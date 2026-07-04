@@ -3,6 +3,7 @@ import '../css/app.css';
 import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
+import { ConfirmProvider } from '@/components/ConfirmDialog';
 
 const appName = import.meta.env.VITE_APP_NAME || 'INSKYLXSTR';
 
@@ -31,7 +32,11 @@ createInertiaApp({
             import.meta.glob('./pages/**/*.tsx'),
         ),
     setup({ el, App, props }) {
-        createRoot(el).render(<App {...props} />);
+        createRoot(el).render(
+            <ConfirmProvider>
+                <App {...props} />
+            </ConfirmProvider>,
+        );
     },
     progress: {
         color: '#000000',

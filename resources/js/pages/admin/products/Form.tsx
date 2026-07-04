@@ -2,6 +2,7 @@ import { Head, Link, useForm, router } from '@inertiajs/react';
 import { Plus, Trash2, X } from 'lucide-react';
 import { FormEvent } from 'react';
 import AdminLayout from '@/layouts/AdminLayout';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 interface VariantForm {
     id?: number;
@@ -47,6 +48,7 @@ interface Props {
 
 export default function Form({ product, categories }: Props) {
     const isEdit = !!product;
+    const confirm = useConfirm();
 
     const { data, setData, post, processing, errors } = useForm<{
         name: string;
@@ -99,8 +101,8 @@ export default function Form({ product, categories }: Props) {
         post(url, { forceFormData: true });
     };
 
-    const deleteImage = (imageId: number) => {
-        if (confirm('Remove this image?')) {
+    const deleteImage = async (imageId: number) => {
+        if (await confirm({ message: 'Remove this image?', danger: true, confirmText: 'Remove' })) {
             router.delete(`/admin/products/${product!.id}/images/${imageId}`, { preserveScroll: true });
         }
     };

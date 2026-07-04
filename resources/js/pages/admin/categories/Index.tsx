@@ -2,6 +2,7 @@ import { Head, useForm, router } from '@inertiajs/react';
 import { Plus, Trash2, Pencil, Check, X } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import AdminLayout from '@/layouts/AdminLayout';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 interface CategoryRow {
     id: number;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function Index({ categories }: Props) {
+    const confirm = useConfirm();
     // Add form
     const { data, setData, post, processing, errors, reset } = useForm({ name: '' });
 
@@ -42,11 +44,11 @@ export default function Index({ categories }: Props) {
         });
     };
 
-    const destroy = (c: CategoryRow) => {
+    const destroy = async (c: CategoryRow) => {
         const msg = c.products_count > 0
             ? `Delete "${c.name}"? ${c.products_count} product(s) will become uncategorized (not deleted).`
             : `Delete "${c.name}"?`;
-        if (confirm(msg)) {
+        if (await confirm({ message: msg, danger: true })) {
             router.delete(`/admin/categories/${c.id}`, { preserveScroll: true });
         }
     };

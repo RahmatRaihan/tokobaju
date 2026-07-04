@@ -3,6 +3,7 @@ import { Eye, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import AdminLayout from '@/layouts/AdminLayout';
 import { Pagination } from '@/components/Pagination';
+import { useConfirm } from '@/components/ConfirmDialog';
 import { Paginated } from '@/types';
 
 interface AdminOrder {
@@ -32,6 +33,7 @@ const statusColors: Record<string, string> = {
 
 export default function Index({ orders, statuses, filters }: Props) {
     const [search, setSearch] = useState(filters.search);
+    const confirm = useConfirm();
 
     const reload = (patch: Record<string, string>) => {
         const query = { status: filters.status, search, ...patch };
@@ -39,8 +41,10 @@ export default function Index({ orders, statuses, filters }: Props) {
         router.get('/admin/orders', clean, { preserveState: true, replace: true });
     };
 
-    const destroy = (id: number, num: string) => {
-        if (confirm(`Delete order ${num}?`)) router.delete(`/admin/orders/${id}`, { preserveScroll: true });
+    const destroy = async (id: number, num: string) => {
+        if (await confirm({ message: `Delete order ${num}? This cannot be undone.`, danger: true })) {
+            router.delete(`/admin/orders/${id}`, { preserveScroll: true });
+        }
     };
 
     return (

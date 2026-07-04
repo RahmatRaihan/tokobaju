@@ -3,6 +3,7 @@ import { Plus, Edit2, Trash2, Search } from 'lucide-react';
 import { useState } from 'react';
 import AdminLayout from '@/layouts/AdminLayout';
 import { Pagination } from '@/components/Pagination';
+import { useConfirm } from '@/components/ConfirmDialog';
 import { Paginated } from '@/types';
 
 interface AdminProduct {
@@ -24,14 +25,15 @@ interface Props {
 
 export default function Index({ products, filters }: Props) {
     const [search, setSearch] = useState(filters.search);
+    const confirm = useConfirm();
 
     const submitSearch = (value: string) => {
         setSearch(value);
         router.get('/admin/products', value ? { search: value } : {}, { preserveState: true, replace: true });
     };
 
-    const destroy = (id: number, name: string) => {
-        if (confirm(`Delete "${name}"? This cannot be undone.`)) {
+    const destroy = async (id: number, name: string) => {
+        if (await confirm({ message: `Delete "${name}"? This cannot be undone.`, danger: true })) {
             router.delete(`/admin/products/${id}`, { preserveScroll: true });
         }
     };
