@@ -1,4 +1,4 @@
-import { ShoppingCart, User, Menu, Settings, LogOut } from 'lucide-react';
+import { ShoppingCart, User, Menu, Settings, LogOut, Package } from 'lucide-react';
 import { useState } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
@@ -61,6 +61,13 @@ export function Header() {
                             </button>
                             {isAccountOpen && (
                                 <div className="absolute right-0 mt-3 w-48 bg-white border border-gray-100 rounded-lg shadow-lg py-2 z-50">
+                                    <Link
+                                        href="/my-orders"
+                                        className="flex items-center space-x-2 px-4 py-2 text-sm font-bold hover:bg-gray-50"
+                                    >
+                                        <Package className="w-4 h-4" />
+                                        <span>Pesanan Saya</span>
+                                    </Link>
                                     {auth.user.is_admin && (
                                         <Link
                                             href="/admin"
@@ -102,6 +109,7 @@ export function Header() {
                     <Link href="/about" className="block w-full text-left text-sm font-bold tracking-wide py-2 hover:bg-gray-50">ABOUT</Link>
                     {auth.user ? (
                         <>
+                            <Link href="/my-orders" className="block w-full text-left text-sm font-bold tracking-wide py-2 hover:bg-gray-50">PESANAN SAYA</Link>
                             {auth.user.is_admin && (
                                 <Link href="/admin" className="block w-full text-left text-sm font-bold tracking-wide py-2 hover:bg-gray-50 text-blue-600">ADMIN PANEL</Link>
                             )}

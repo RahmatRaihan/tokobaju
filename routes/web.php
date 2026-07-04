@@ -16,6 +16,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +64,16 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 */
 Route::post('/checkout', [CheckoutController::class, 'store'])
     ->middleware('auth')->name('checkout.store');
+
+/*
+|--------------------------------------------------------------------------
+| Customer order tracking (requires login)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    Route::get('/my-orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/my-orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+});
 
 /*
 |--------------------------------------------------------------------------
