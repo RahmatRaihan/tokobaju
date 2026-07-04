@@ -32,7 +32,7 @@ export default function Gallery({ images }: GalleryProps) {
                 {images.length === 0 ? (
                     <p className="text-center text-gray-400 py-24">No gallery images yet.</p>
                 ) : (
-                    <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {images.map((image, index) => (
                             <motion.div
                                 key={image.id}
@@ -40,15 +40,14 @@ export default function Gallery({ images }: GalleryProps) {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.05 }}
-                                className="break-inside-avoid"
                             >
-                                <div className="group relative overflow-hidden rounded-sm bg-gray-50">
+                                <div className="group relative overflow-hidden rounded-sm bg-gray-50 aspect-[3/4]">
                                     <img
                                         src={image.url}
                                         alt={image.caption ?? `Gallery image ${index + 1}`}
                                         loading="lazy"
                                         decoding="async"
-                                        className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-105 mix-blend-multiply"
+                                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 </div>
