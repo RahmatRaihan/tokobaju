@@ -1,0 +1,54 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: inskylxstr-app
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - inskylxstr
+
+  mysql:
+    image: mysql:8
+    container_name: inskylxstr-mysql
+    environment:
+      MYSQL_DATABASE: inskylxstr
+      MYSQL_USER: sail
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+    ports:
+      - "3307:3306"
+    volumes:
+      - inskylxstr-mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - inskylxstr
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: inskylxstr-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - inskylxstr
+
+networks:
+  inskylxstr:
+    driver: bridge
+
+volumes:
+  inskylxstr-mysql:
+    driver: local

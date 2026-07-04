@@ -1,0 +1,26 @@
+# =====================================================================
+# INSKYLXSTR — systemd unit for Laravel Octane (FrankenPHP)
+# Install: sudo cp deploy/inskylxstr-octane.service /etc/systemd/system/
+#          sudo systemctl daemon-reload
+#          sudo systemctl enable --now inskylxstr-octane
+# Adjust User, WorkingDirectory and the php path if needed.
+# =====================================================================
+
+[Unit]
+Description=INSKYLXSTR Laravel Octane (FrankenPHP)
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/inskylxstr
+# Octane listens on localhost; Nginx proxies to it.
+ExecStart=/usr/bin/php artisan octane:frankenphp --host=127.0.0.1 --port=8000 --workers=auto --max-requests=500
+Restart=always
+RestartSec=3
+# Reload workers gracefully on `systemctl reload`.
+ExecReload=/usr/bin/php artisan octane:reload
+
+[Install]
+WantedBy=multi-user.target
