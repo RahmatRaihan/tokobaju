@@ -13,6 +13,7 @@ class CommunityController extends Controller
         return Inertia::render('Community', [
             'photos' => CommunityPhoto::where('is_active', true)
                 ->orderBy('sort_order')
+                ->orderBy('id')
                 ->get()
                 ->map(fn ($p) => [
                     'id' => $p->id,

@@ -13,6 +13,7 @@ class GalleryController extends Controller
         return Inertia::render('Gallery', [
             'images' => GalleryImage::where('is_active', true)
                 ->orderBy('sort_order')
+                ->orderBy('id')
                 ->get()
                 ->map(fn ($g) => [
                     'id' => $g->id,

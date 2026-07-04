@@ -21,7 +21,7 @@ export default function Home({ featured, hero }: HomeProps) {
             {/* Hero */}
             <div className="relative w-full h-[calc(100vh-96px)] bg-gray-900 overflow-hidden">
                 {hero.image && (
-                    <img src={hero.image} alt={hero.heading} className="w-full h-full object-cover object-top opacity-90" />
+                    <img src={hero.image} alt={hero.heading} className="w-full h-full object-cover object-center opacity-90" />
                 )}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
                     <motion.h1
