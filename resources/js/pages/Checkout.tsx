@@ -1,5 +1,4 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { motion } from 'motion/react';
 import { useState, useEffect, FormEvent } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import StoreLayout from '@/layouts/StoreLayout';
@@ -12,7 +11,18 @@ interface CheckoutProps {
     prefill: { name: string; phone: string; email: string };
 }
 
+// The page shell provides StoreLayout (and its CartProvider); the body below
+// uses useCart() and must therefore live inside it.
 export default function Checkout({ prefill }: CheckoutProps) {
+    return (
+        <StoreLayout>
+            <Head title="Checkout" />
+            <CheckoutBody prefill={prefill} />
+        </StoreLayout>
+    );
+}
+
+function CheckoutBody({ prefill }: CheckoutProps) {
     const { items, subtotal, clear } = useCart();
     const { flash } = usePage<PageProps>().props;
 
@@ -88,25 +98,20 @@ export default function Checkout({ prefill }: CheckoutProps) {
     // Empty cart guard.
     if (items.length === 0) {
         return (
-            <StoreLayout>
-                <Head title="Checkout" />
-                <div className="max-w-md w-full mx-auto px-4 py-24 text-center text-gray-400">
-                    <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <ShoppingBag className="w-9 h-9 text-gray-300" />
-                    </div>
-                    <p className="text-lg font-bold uppercase tracking-wide text-gray-700 mb-2">Keranjang kosong</p>
-                    <p className="text-sm mb-6">Tambahkan produk dulu sebelum checkout.</p>
-                    <Link href="/catalog" className="inline-block bg-black text-white text-sm font-bold px-8 py-3 rounded-sm uppercase tracking-widest hover:bg-gray-900">
-                        Belanja Sekarang
-                    </Link>
+            <div className="max-w-md w-full mx-auto px-4 py-24 text-center text-gray-400">
+                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <ShoppingBag className="w-9 h-9 text-gray-300" />
                 </div>
-            </StoreLayout>
+                <p className="text-lg font-bold uppercase tracking-wide text-gray-700 mb-2">Keranjang kosong</p>
+                <p className="text-sm mb-6">Tambahkan produk dulu sebelum checkout.</p>
+                <Link href="/catalog" className="inline-block bg-black text-white text-sm font-bold px-8 py-3 rounded-sm uppercase tracking-widest hover:bg-gray-900">
+                    Belanja Sekarang
+                </Link>
+            </div>
         );
     }
 
     return (
-        <StoreLayout>
-            <Head title="Checkout" />
             <div className="max-w-6xl w-full mx-auto px-4 lg:px-8 py-10 lg:py-14">
                 {/* Breadcrumb */}
                 <div className="text-sm mb-8">
@@ -263,6 +268,5 @@ export default function Checkout({ prefill }: CheckoutProps) {
                     </aside>
                 </div>
             </div>
-        </StoreLayout>
     );
 }
