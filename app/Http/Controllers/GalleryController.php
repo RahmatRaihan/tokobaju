@@ -11,8 +11,8 @@ class GalleryController extends Controller
     public function index(): Response
     {
         return Inertia::render('Gallery', [
+            // Order strictly by upload order (id ascending = oldest upload first).
             'images' => GalleryImage::where('is_active', true)
-                ->orderBy('sort_order')
                 ->orderBy('id')
                 ->get()
                 ->map(fn ($g) => [

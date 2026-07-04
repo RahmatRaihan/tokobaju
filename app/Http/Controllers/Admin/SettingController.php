@@ -28,9 +28,9 @@ class SettingController extends Controller
                 'about_text' => Setting::get('about_text'),
                 'about_image_url' => image_url(Setting::get('about_image')),
             ],
-            'community_photos' => CommunityPhoto::orderBy('sort_order')->orderBy('id')->get()
+            'community_photos' => CommunityPhoto::orderBy('id')->get()
                 ->map(fn ($p) => ['id' => $p->id, 'url' => $p->url, 'caption' => $p->caption]),
-            'gallery_images' => GalleryImage::orderBy('sort_order')->orderBy('id')->get()
+            'gallery_images' => GalleryImage::orderBy('id')->get()
                 ->map(fn ($g) => ['id' => $g->id, 'url' => $g->url, 'caption' => $g->caption]),
         ]);
     }

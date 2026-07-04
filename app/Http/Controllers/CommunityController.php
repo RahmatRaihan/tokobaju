@@ -11,8 +11,8 @@ class CommunityController extends Controller
     public function index(): Response
     {
         return Inertia::render('Community', [
+            // Order strictly by upload order (id ascending = oldest upload first).
             'photos' => CommunityPhoto::where('is_active', true)
-                ->orderBy('sort_order')
                 ->orderBy('id')
                 ->get()
                 ->map(fn ($p) => [
