@@ -7,6 +7,14 @@ Stack in production: **Nginx** (TLS + static) → **Laravel Octane / FrankenPHP*
 ## 0. Prerequisites on the VPS
 
 - Ubuntu 22.04/24.04, a domain pointed at the server's IP.
+
+> **DNS first (do this before certbot):** at your domain registrar, create two
+> A records pointing to the VPS IP `103.247.11.234`:
+> - `inskylxstr.com`      → `103.247.11.234`
+> - `www.inskylxstr.com`  → `103.247.11.234`
+>
+> Wait for propagation (`ping www.inskylxstr.com` should return the VPS IP)
+> before running certbot in step 7.
 - Installed: **PHP 8.4** (cli) with extensions `pdo_mysql gd zip bcmath opcache pcntl sockets mbstring curl xml`, **Composer**, **Node 20+ / npm**, **MySQL 8**, **Nginx**, **certbot**.
 
 ```bash
@@ -26,7 +34,7 @@ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && sudo apt in
 
 ```bash
 sudo mkdir -p /var/www/inskylxstr && sudo chown -R $USER:www-data /var/www/inskylxstr
-git clone <YOUR_GITHUB_REPO_URL> /var/www/inskylxstr
+git clone https://github.com/RahmatRaihan/tokobaju.git /var/www/inskylxstr
 cd /var/www/inskylxstr
 ```
 
@@ -86,10 +94,10 @@ sudo cp deploy/nginx.conf /etc/nginx/sites-available/inskylxstr
 # edit server_name + paths in that file, then:
 sudo ln -s /etc/nginx/sites-available/inskylxstr /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+sudo certbot --nginx -d inskylxstr.com -d www.inskylxstr.com
 ```
 
-Visit **https://yourdomain.com** — done.
+Visit **https://www.inskylxstr.com** — done.
 
 ---
 
