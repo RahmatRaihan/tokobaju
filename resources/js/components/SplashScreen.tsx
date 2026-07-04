@@ -104,7 +104,7 @@ export function SplashScreen() {
                             animate={{ opacity: 1 }}
                             transition={{ delay: 1.3, duration: 0.6 }}
                         >
-                            Streetwear · Jakarta
+                            Streetwear · Pontianak
                         </motion.p>
                     </div>
 
