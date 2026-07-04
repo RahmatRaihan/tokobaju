@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'order_number', 'user_id', 'customer_name', 'customer_phone',
-    'shipping_address', 'notes', 'subtotal', 'total', 'status', 'whatsapp_sent_at',
+    'order_number', 'user_id', 'customer_name', 'customer_phone', 'customer_email',
+    'shipping_address', 'province', 'city', 'postal_code',
+    'notes', 'subtotal', 'total', 'status', 'whatsapp_sent_at',
 ])]
 class Order extends Model
 {

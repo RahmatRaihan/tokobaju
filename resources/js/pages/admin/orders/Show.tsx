@@ -15,7 +15,11 @@ interface Order {
     order_number: string;
     customer_name: string;
     customer_phone: string;
+    customer_email: string | null;
     shipping_address: string | null;
+    city: string | null;
+    province: string | null;
+    postal_code: string | null;
     notes: string | null;
     status: string;
     subtotal_formatted: string;
@@ -48,7 +52,11 @@ export default function Show({ order, statuses }: Props) {
                         <h3 className="font-bold mb-3">Customer</h3>
                         <p className="text-sm"><span className="text-gray-500">Name:</span> {order.customer_name}</p>
                         <p className="text-sm"><span className="text-gray-500">Phone:</span> {order.customer_phone}</p>
+                        {order.customer_email && <p className="text-sm"><span className="text-gray-500">Email:</span> {order.customer_email}</p>}
                         <p className="text-sm"><span className="text-gray-500">Address:</span> {order.shipping_address ?? '—'}</p>
+                        {(order.city || order.province) && (
+                            <p className="text-sm"><span className="text-gray-500">City / Province:</span> {[order.city, order.province, order.postal_code].filter(Boolean).join(', ')}</p>
+                        )}
                         <p className="text-sm"><span className="text-gray-500">Notes:</span> {order.notes ?? '—'}</p>
                         <p className="text-sm"><span className="text-gray-500">Placed:</span> {order.created_at}</p>
                     </div>

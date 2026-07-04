@@ -62,8 +62,10 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 | Checkout (requires login) -> WhatsApp
 |--------------------------------------------------------------------------
 */
-Route::post('/checkout', [CheckoutController::class, 'store'])
-    ->middleware('auth')->name('checkout.store');
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+});
 
 /*
 |--------------------------------------------------------------------------

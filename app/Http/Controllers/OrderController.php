@@ -50,7 +50,12 @@ class OrderController extends Controller
                 'status' => $order->status,
                 'customer_name' => $order->customer_name,
                 'customer_phone' => $order->customer_phone,
-                'shipping_address' => $order->shipping_address,
+                'shipping_address' => collect([
+                    $order->shipping_address,
+                    $order->city,
+                    $order->province,
+                    $order->postal_code,
+                ])->filter()->implode(', ') ?: $order->shipping_address,
                 'notes' => $order->notes,
                 'subtotal_formatted' => format_rupiah($order->subtotal),
                 'total_formatted' => $order->total_formatted,
