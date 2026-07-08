@@ -8,6 +8,13 @@ interface ImageItem {
     id: number;
     url: string;
     caption: string | null;
+    product_id?: number | null;
+    product_name?: string | null;
+}
+
+interface ProductOption {
+    id: number;
+    name: string;
 }
 
 interface Props {
@@ -24,23 +31,49 @@ interface Props {
     };
     community_photos: ImageItem[];
     gallery_images: ImageItem[];
+    products: ProductOption[];
 }
 
-function ImageManager({ title, items, storeUrl, destroyBase }: { title: string; items: ImageItem[]; storeUrl: string; destroyBase: string }) {
+function ImageManager({
+    title,
+    items,
+    storeUrl,
+    destroyBase,
+    products,
+}: {
+    title: string;
+    items: ImageItem[];
+    storeUrl: string;
+    destroyBase: string;
+    products?: ProductOption[]; // when provided, each photo links to a product ("Shop the Look")
+}) {
     const fileRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
+    const [productId, setProductId] = useState('');
     const confirm = useConfirm();
 
-    const upload = (file: File) => {
+    const doUpload = (file: File, product: string) => {
         setUploading(true);
-        router.post(storeUrl, { image: file }, {
+        router.post(storeUrl, { image: file, product_id: product || undefined }, {
             forceFormData: true,
             preserveScroll: true,
             onFinish: () => {
                 setUploading(false);
+                setPendingFile(null);
+                setProductId('');
                 if (fileRef.current) fileRef.current.value = '';
             },
         });
+    };
+
+    const onFilePicked = (file: File) => {
+        // For community (products provided), let admin pick a product before uploading.
+        if (products) {
+            setPendingFile(file);
+        } else {
+            doUpload(file, '');
+        }
     };
 
     const destroy = async (id: number) => {
@@ -54,31 +87,54 @@ function ImageManager({ title, items, storeUrl, destroyBase }: { title: string; 
             <h3 className="text-lg font-bold mb-3">{title}</h3>
             <div className="flex flex-wrap gap-3 mb-4">
                 {items.map((item) => (
-                    <div key={item.id} className="relative w-24 h-24">
-                        <img src={item.url} alt="" className="w-24 h-24 object-cover rounded-lg border border-gray-200 bg-gray-50" />
-                        <button type="button" onClick={() => destroy(item.id)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">
-                            <Trash2 className="w-3 h-3" />
-                        </button>
+                    <div key={item.id} className="relative w-24">
+                        <div className="relative w-24 h-24">
+                            <img src={item.url} alt="" className="w-24 h-24 object-cover rounded-lg border border-gray-200 bg-gray-50" />
+                            <button type="button" onClick={() => destroy(item.id)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">
+                                <Trash2 className="w-3 h-3" />
+                            </button>
+                        </div>
+                        {products && (
+                            <p className="text-[10px] text-gray-500 mt-1 text-center leading-tight line-clamp-2">
+                                {item.product_name ? `→ ${item.product_name}` : 'No product'}
+                            </p>
+                        )}
                     </div>
                 ))}
                 {items.length === 0 && <p className="text-sm text-gray-400">No images yet.</p>}
             </div>
-            <label className="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-black cursor-pointer">
-                <Upload className="w-4 h-4" />
-                {uploading ? 'Uploading…' : 'Upload image'}
-                <input
-                    ref={fileRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className="hidden"
-                    onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
-                />
-            </label>
+
+            {/* Community: choose a product for the picked file, then upload */}
+            {products && pendingFile ? (
+                <div className="flex flex-wrap items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <span className="text-sm text-gray-600">Link to product:</span>
+                    <select value={productId} onChange={(e) => setProductId(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <option value="">— None (no Shop the Look) —</option>
+                        {products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    </select>
+                    <button type="button" onClick={() => doUpload(pendingFile, productId)} disabled={uploading} className="bg-black text-white px-4 py-2 text-sm font-bold rounded-lg hover:bg-gray-800 disabled:opacity-60">
+                        {uploading ? 'Uploading…' : 'Upload'}
+                    </button>
+                    <button type="button" onClick={() => { setPendingFile(null); setProductId(''); }} className="text-sm text-gray-500 hover:text-black">Cancel</button>
+                </div>
+            ) : (
+                <label className="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-black cursor-pointer">
+                    <Upload className="w-4 h-4" />
+                    {uploading ? 'Uploading…' : products ? 'Add photo (with product)' : 'Upload image'}
+                    <input
+                        ref={fileRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        onChange={(e) => e.target.files?.[0] && onFilePicked(e.target.files[0])}
+                    />
+                </label>
+            )}
         </div>
     );
 }
 
-export default function Settings({ settings, community_photos, gallery_images }: Props) {
+export default function Settings({ settings, community_photos, gallery_images, products }: Props) {
     const { data, setData, post, processing, errors } = useForm<{
         store_name: string;
         store_email: string;
@@ -181,7 +237,7 @@ export default function Settings({ settings, community_photos, gallery_images }:
 
                 {/* Community & Gallery (managed independently of the settings form) */}
                 <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 space-y-8">
-                    <ImageManager title="Community Photos" items={community_photos} storeUrl="/admin/community-photos" destroyBase="/admin/community-photos" />
+                    <ImageManager title="Community Photos" items={community_photos} storeUrl="/admin/community-photos" destroyBase="/admin/community-photos" products={products} />
                     <hr className="border-gray-100" />
                     <ImageManager title="Gallery Images" items={gallery_images} storeUrl="/admin/gallery-images" destroyBase="/admin/gallery-images" />
                 </div>

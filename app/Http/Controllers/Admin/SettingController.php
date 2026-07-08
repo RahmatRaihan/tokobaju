@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CommunityPhoto;
 use App\Models\GalleryImage;
+use App\Models\Product;
 use App\Models\Setting;
 use App\Support\ImageOptimizer;
 use Illuminate\Http\RedirectResponse;
@@ -28,10 +29,17 @@ class SettingController extends Controller
                 'about_text' => Setting::get('about_text'),
                 'about_image_url' => image_url(Setting::get('about_image')),
             ],
-            'community_photos' => CommunityPhoto::orderBy('id')->get()
-                ->map(fn ($p) => ['id' => $p->id, 'url' => $p->url, 'caption' => $p->caption]),
+            'community_photos' => CommunityPhoto::with('product:id,name')->orderBy('id')->get()
+                ->map(fn ($p) => [
+                    'id' => $p->id,
+                    'url' => $p->url,
+                    'caption' => $p->caption,
+                    'product_id' => $p->product_id,
+                    'product_name' => $p->product?->name,
+                ]),
             'gallery_images' => GalleryImage::orderBy('id')->get()
                 ->map(fn ($g) => ['id' => $g->id, 'url' => $g->url, 'caption' => $g->caption]),
+            'products' => Product::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
