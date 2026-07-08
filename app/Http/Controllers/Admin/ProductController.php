@@ -173,9 +173,9 @@ class ProductController extends Controller
             'variants.*.stock' => ['required', 'integer', 'min:0'],
             'variants.*.is_active' => ['boolean'],
             'images' => ['array'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'primary_image_index' => ['nullable', 'integer'],
-            'size_chart' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'size_chart' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'remove_size_chart' => ['nullable', 'boolean'],
         ]);
     }

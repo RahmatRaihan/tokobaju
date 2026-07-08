@@ -67,6 +67,27 @@ npm run build
 php artisan config:cache && php artisan route:cache && php artisan event:cache && php artisan view:cache
 ```
 
+## 4b. PHP upload limits (Octane runs the **CLI** php.ini)
+
+Ubuntu's CLI defaults (`upload_max_filesize=2M`, `post_max_size=8M`) are too small
+for 10MB product images. Check, then raise:
+
+```bash
+php -i | grep -E 'upload_max_filesize|post_max_size|memory_limit'
+
+sudo tee /etc/php/8.4/cli/conf.d/99-inskylxstr.ini <<'INI'
+memory_limit = 512M
+upload_max_filesize = 12M
+post_max_size = 64M
+INI
+
+sudo systemctl restart inskylxstr-octane
+```
+
+`post_max_size` must fit several images in one product POST, and Nginx's
+`client_max_body_size` (64M in `deploy/nginx.conf`) must be >= it. If either is
+too small the request is dropped **before** Laravel's `max:10240` rule runs.
+
 ## 5. Permissions
 
 ```bash

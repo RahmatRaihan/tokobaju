@@ -204,7 +204,7 @@ export default function Form({ product, categories }: Props) {
                         )}
 
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Upload images (jpg, png, webp — max 4MB each)</label>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Upload images (jpg, png, webp — max 10MB each)</label>
                             <input
                                 type="file"
                                 accept="image/jpeg,image/png,image/webp"
@@ -246,7 +246,7 @@ export default function Form({ product, categories }: Props) {
 
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">
-                                {isEdit && product!.size_chart_url ? 'Replace size chart' : 'Upload size chart'} (jpg, png, webp — max 4MB)
+                                {isEdit && product!.size_chart_url ? 'Replace size chart' : 'Upload size chart'} (jpg, png, webp — max 10MB)
                             </label>
                             <input
                                 type="file"
