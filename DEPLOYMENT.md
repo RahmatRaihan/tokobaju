@@ -10,11 +10,13 @@ Stack in production: **Nginx** (TLS + static) → **Laravel Octane / FrankenPHP*
 
 > **DNS first (do this before certbot):** at your domain registrar, create two
 > A records pointing to the VPS IP `103.247.11.234`:
-> - `inskylxstr.com`      → `103.247.11.234`
-> - `www.inskylxstr.com`  → `103.247.11.234`
+>
+> - `inskylxstr.com` → `103.247.11.234`
+> - `www.inskylxstr.com` → `103.247.11.234`
 >
 > Wait for propagation (`ping www.inskylxstr.com` should return the VPS IP)
 > before running certbot in step 7.
+
 - Installed: **PHP 8.4** (cli) with extensions `pdo_mysql gd zip bcmath opcache pcntl sockets mbstring curl xml`, **Composer**, **Node 20+ / npm**, **MySQL 8**, **Nginx**, **certbot**.
 
 ```bash
@@ -88,11 +90,11 @@ sudo systemctl restart inskylxstr-octane
 Every PHP limit must sit **above** the app rule it backs, or PHP kills the request
 before Laravel can return a readable error (you get a blank 500):
 
-| PHP setting | Backs | Must exceed |
-| --- | --- | --- |
-| `post_max_size` (64M) | product form with several images | total POST body |
-| `upload_max_filesize` (12M) | `max:10240` (10MB per image) | 10MB |
-| `max_file_uploads` (30) | `max:20` (images per batch) | 20 |
+| PHP setting                 | Backs                            | Must exceed     |
+| --------------------------- | -------------------------------- | --------------- |
+| `post_max_size` (64M)       | product form with several images | total POST body |
+| `upload_max_filesize` (12M) | `max:10240` (10MB per image)     | 10MB            |
+| `max_file_uploads` (30)     | `max:20` (images per batch)      | 20              |
 
 Nginx's `client_max_body_size` (64M in `deploy/nginx.conf`) must be >= `post_max_size`.
 
