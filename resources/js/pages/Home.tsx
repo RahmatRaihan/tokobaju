@@ -23,7 +23,7 @@ export default function Home({ featured, hero }: HomeProps) {
                 {hero.image && (
                     <img src={hero.image} alt={hero.heading} className="w-full h-full object-cover object-center opacity-90" />
                 )}
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pt-32 sm:pt-40">
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
