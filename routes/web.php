@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/export/orders', [AdminDashboardController::class, 'exportOrders'])->name('export.orders');
 
     // Products
     Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
