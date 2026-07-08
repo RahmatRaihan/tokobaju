@@ -32,22 +32,24 @@ export default function Gallery({ images }: GalleryProps) {
                 {images.length === 0 ? (
                     <p className="text-center text-gray-400 py-24">No gallery images yet.</p>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Masonry (Pinterest-style): CSS columns keep each image's natural height */}
+                    <div className="columns-2 md:columns-3 lg:columns-4 gap-4">
                         {images.map((image, index) => (
                             <motion.div
                                 key={image.id}
+                                className="mb-4 break-inside-avoid"
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: index * 0.05 }}
+                                transition={{ delay: (index % 8) * 0.04 }}
                             >
-                                <div className="group relative overflow-hidden rounded-sm bg-gray-50 aspect-[3/4]">
+                                <div className="group relative overflow-hidden rounded-xl bg-gray-50">
                                     <img
                                         src={image.url}
                                         alt={image.caption ?? `Gallery image ${index + 1}`}
                                         loading="lazy"
                                         decoding="async"
-                                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                                        className="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 </div>
