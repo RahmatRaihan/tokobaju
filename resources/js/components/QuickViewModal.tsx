@@ -205,7 +205,7 @@ export function QuickViewModal({ slug, onClose }: QuickViewModalProps) {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.98, y: 40 }}
                             transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-                            className="bg-white w-full max-w-4xl rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col md:flex-row pointer-events-auto relative max-h-[92vh] md:max-h-[90vh] overflow-y-auto md:overflow-hidden"
+                            className="bg-white w-full max-w-4xl rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col md:flex-row pointer-events-auto relative max-h-[92vh] md:max-h-[90vh] overflow-hidden"
                         >
                             <button onClick={onClose} aria-label="Close quick view" className="absolute top-3 right-3 md:top-4 md:right-4 z-10 p-2.5 bg-white/90 backdrop-blur rounded-full shadow hover:bg-gray-100 transition-colors">
                                 <X className="w-5 h-5" />
@@ -234,7 +234,7 @@ export function QuickViewModal({ slug, onClose }: QuickViewModalProps) {
                                             <img
                                                 src={gallery[activeImage] ?? ''}
                                                 alt={product.name}
-                                                className="w-full h-full object-contain max-h-[52vh] md:max-h-[60vh] transition-transform duration-200 ease-out"
+                                                className="w-full h-full object-contain max-h-[38vh] md:max-h-[60vh] transition-transform duration-200 ease-out"
                                                 style={{
                                                     transform: zoom.active ? 'scale(2)' : 'scale(1)',
                                                     transformOrigin: `${zoom.x}% ${zoom.y}%`,
@@ -262,16 +262,17 @@ export function QuickViewModal({ slug, onClose }: QuickViewModalProps) {
                                         )}
                                     </div>
 
-                                    {/* Details */}
-                                    <div className="w-full md:w-1/2 p-5 pb-8 md:p-12 flex flex-col md:overflow-y-auto">
+                                    {/* Details — the only scroll container. `min-h-0` is what lets a
+                                        flex child shrink below its content and actually scroll. */}
+                                    <div className="w-full md:w-1/2 flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 pt-4 pb-0 md:p-12 md:pb-0 flex flex-col">
                                         <h2 className="text-xl md:text-3xl font-black uppercase tracking-tighter mb-1 pr-10">{product.name}</h2>
                                         <p className="text-lg md:text-xl font-medium text-gray-700 mb-5 md:mb-6">
                                             {selectedVariant?.price_formatted ?? product.price_formatted}
                                         </p>
 
                                         {product.description && (
-                                            <div className="prose prose-sm text-gray-600 mb-6 md:mb-8">
-                                                <p className="line-clamp-3 md:line-clamp-none">{product.description}</p>
+                                            <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-line mb-6 md:mb-8">
+                                                {product.description}
                                             </div>
                                         )}
 
@@ -323,7 +324,9 @@ export function QuickViewModal({ slug, onClose }: QuickViewModalProps) {
                                             </div>
                                         )}
 
-                                        <div className="mt-auto pt-4">
+                                        {/* Sticks to the bottom of the scroll area so a long description
+                                            can never scroll Add to Cart out of reach. */}
+                                        <div className="mt-auto sticky bottom-0 -mx-5 px-5 pb-5 pt-3 md:-mx-12 md:px-12 md:pb-12 bg-white/95 backdrop-blur-sm border-t border-gray-100">
                                             {!selectedVariant || selectedVariant.is_sold_out ? (
                                                 <button disabled className="w-full bg-[#2c2f33] text-white font-bold py-4 rounded-xl uppercase tracking-wide opacity-80 cursor-not-allowed">
                                                     Sold Out
