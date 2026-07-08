@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import StoreLayout from '@/layouts/StoreLayout';
 
@@ -32,6 +32,16 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 export default function Help() {
     const [open, setOpen] = useState<number | null>(0);
+
+    // Scroll to #contact if the page is opened with that hash (e.g. from the
+    // footer "Contact Us" link), accounting for the fixed navbar.
+    useEffect(() => {
+        if (window.location.hash === '#contact') {
+            requestAnimationFrame(() => {
+                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+    }, []);
 
     return (
         <StoreLayout>
@@ -94,7 +104,7 @@ export default function Help() {
                 </section>
 
                 {/* Contact Us */}
-                <section>
+                <section id="contact" className="scroll-mt-32">
                     <SectionTitle>Contact Us</SectionTitle>
                     <div className="bg-gray-50 rounded-lg p-6 lg:p-8">
                         <p className="text-sm text-gray-500 leading-relaxed mb-6">

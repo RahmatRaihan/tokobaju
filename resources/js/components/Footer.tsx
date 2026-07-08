@@ -7,8 +7,6 @@ export function Footer() {
     const { site } = usePage<PageProps>().props;
     const instagramUrl = site.instagram_url || 'https://instagram.com/inskylxstr';
     const tiktokUrl = 'https://www.tiktok.com/@inskylxstr';
-    const waNumber = site.whatsapp_number?.replace(/\D/g, '');
-    const contactHref = waNumber ? `https://wa.me/${waNumber}` : '/help';
 
     return (
         <footer className="bg-black text-white mt-auto">
@@ -38,7 +36,7 @@ export function Footer() {
                         <h4 className="text-xs md:text-sm font-bold tracking-widest uppercase mb-3 md:mb-5 text-white">Support</h4>
                         <ul className="space-y-2 md:space-y-3">
                             <li><Link href="/help" className="text-xs md:text-sm text-gray-400 hover:text-white font-bold uppercase tracking-wide transition-colors">Help Center</Link></li>
-                            <li><a href={contactHref} target="_blank" rel="noreferrer" className="text-xs md:text-sm text-gray-400 hover:text-white font-bold uppercase tracking-wide transition-colors">Contact Us</a></li>
+                            <li><Link href="/help#contact" className="text-xs md:text-sm text-gray-400 hover:text-white font-bold uppercase tracking-wide transition-colors">Contact Us</Link></li>
                         </ul>
                     </div>
 
