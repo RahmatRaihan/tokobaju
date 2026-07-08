@@ -38,6 +38,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Admin Idle Timeout
+    |--------------------------------------------------------------------------
+    |
+    | Minutes of inactivity inside /admin before the admin is logged out. Tighter
+    | than the global lifetime, because an unattended admin panel is the dangerous
+    | one. Set to 0 to disable. Enforced by EnsureUserIsAdmin.
+    |
+    */
+
+    'admin_idle_timeout' => (int) env('ADMIN_IDLE_TIMEOUT', 30),
+
+    /*
+    |--------------------------------------------------------------------------
     | Session Encryption
     |--------------------------------------------------------------------------
     |

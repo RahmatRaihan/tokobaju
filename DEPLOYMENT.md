@@ -152,6 +152,8 @@ reloads Octane (zero downtime).
 - [ ] `sudo systemctl status inskylxstr-queue` is **active** — new-order emails are
       queued, so without the worker they are written to `jobs` and never sent
 - [ ] Admin password changed from any default (log in and update)
+- [ ] `ADMIN_IDLE_TIMEOUT` set (default 30 min). Admins are logged out after that
+      long with no `/admin` activity, and never get a "remember me" cookie.
 - [ ] WhatsApp number set in **Admin → Settings** (format `62…`)
 - [ ] Hero / About / Community / Gallery images uploaded
 - [ ] HTTPS working, `http` redirects to `https`

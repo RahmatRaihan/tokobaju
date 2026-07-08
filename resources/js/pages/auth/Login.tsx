@@ -1,10 +1,12 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { motion } from 'motion/react';
 import { FormEvent } from 'react';
 import StoreLayout from '@/layouts/StoreLayout';
 import { PasswordInput } from '@/components/PasswordInput';
+import { PageProps } from '@/types';
 
 export default function Login() {
+    const { flash } = usePage<PageProps>().props;
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
@@ -30,6 +32,12 @@ export default function Login() {
                         <h1 className="text-3xl font-black tracking-tighter uppercase italic mb-2">Login</h1>
                         <p className="text-gray-500 text-sm font-medium">Welcome back. Please enter your details.</p>
                     </div>
+
+                    {flash.error && (
+                        <div role="alert" className="mb-6 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-sm px-4 py-3">
+                            {flash.error}
+                        </div>
+                    )}
 
                     <form onSubmit={submit} className="space-y-5">
                         <div>
