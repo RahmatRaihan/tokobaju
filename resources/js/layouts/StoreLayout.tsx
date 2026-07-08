@@ -33,7 +33,7 @@ function Chrome({ children }: { children: ReactNode }) {
             <Header />
             {/* The navbar is fixed; the landing hero sits under it full-bleed,
                 other pages need top padding equal to the navbar height (h-24). */}
-            <div className={`flex-1 w-full flex flex-col ${isLanding ? '' : 'pt-24 md:pt-32'}`}>{children}</div>
+            <div className={`flex-1 w-full flex flex-col ${isLanding ? '' : 'pt-24'}`}>{children}</div>
 
             <AnimatePresence>
                 {showScrollTop && (
