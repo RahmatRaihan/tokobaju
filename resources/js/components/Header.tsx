@@ -56,7 +56,7 @@ export function Header() {
                         <img
                             src="/images/logo-brand.png"
                             alt="INSKYLXSTR"
-                            className="h-20 sm:h-24 w-auto object-contain"
+                            className="h-[72px] md:h-[88px] w-auto max-w-[150px] md:max-w-[220px] object-contain transition-all"
                         />
                     </Link>
                 </div>
