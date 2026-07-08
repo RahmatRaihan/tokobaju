@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'motion/react';
 import { ShoppingBag } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import StoreLayout from '@/layouts/StoreLayout';
 
 interface GalleryImage {
@@ -15,7 +16,33 @@ interface GalleryProps {
     images: GalleryImage[];
 }
 
+/** Mirrors `columns-2 md:columns-3 lg:columns-4` (Tailwind md=768, lg=1024). */
+const columnsFor = (width: number) => (width >= 1024 ? 4 : width >= 768 ? 3 : 2);
+
+function useColumnCount(): number {
+    const [count, setCount] = useState(() => columnsFor(typeof window === 'undefined' ? 1280 : window.innerWidth));
+
+    useEffect(() => {
+        const onResize = () => setCount(columnsFor(window.innerWidth));
+        onResize();
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
+
+    return count;
+}
+
 export default function Gallery({ images }: GalleryProps) {
+    const columnCount = useColumnCount();
+
+    // CSS `columns` fills top-to-bottom per column, so image 2 lands under image 1
+    // instead of beside it. Dealing the images round-robin makes the reading order
+    // (left→right, top→bottom) match the admin's upload order.
+    // ponytail: no height balancing — columns can end uneven. Correct order wins;
+    // swap in a measure-then-place layout only if the ragged bottom bothers you.
+    const columns = Array.from({ length: columnCount }, (_, col) =>
+        images.filter((_, index) => index % columnCount === col),
+    );
     return (
         <StoreLayout>
             <Head title="Gallery" />
@@ -41,12 +68,15 @@ export default function Gallery({ images }: GalleryProps) {
                 {images.length === 0 ? (
                     <p className="text-center text-gray-400 py-24">No gallery images yet.</p>
                 ) : (
-                    /* Masonry (Pinterest-style): CSS columns keep each image's natural height */
-                    <div className="columns-2 md:columns-3 lg:columns-4 gap-4">
-                        {images.map((image, index) => (
+                    /* Masonry (Pinterest-style): flex columns keep each image's natural height */
+                    <div className="flex items-start gap-4">
+                        {columns.map((column, col) => (
+                            <div key={col} className="flex-1 min-w-0 flex flex-col gap-4">
+                        {column.map((image, row) => {
+                            const index = row * columnCount + col; // original upload position
+                            return (
                             <motion.div
                                 key={image.id}
-                                className="mb-4 break-inside-avoid"
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
@@ -80,6 +110,9 @@ export default function Gallery({ images }: GalleryProps) {
                                     </div>
                                 </div>
                             </motion.div>
+                            );
+                        })}
+                            </div>
                         ))}
                     </div>
                 )}
