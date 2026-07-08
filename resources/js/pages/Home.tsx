@@ -32,7 +32,7 @@ export default function Home({ featured, hero }: HomeProps) {
                         {hero.heading}
                     </motion.h1>
                     {hero.subheading && (
-                        <p className="text-white/90 max-w-xl mb-8 font-medium uppercase tracking-wide drop-shadow">{hero.subheading}</p>
+                        <p className="text-xs md:text-sm lg:text-[15px] font-semibold text-gray-200 uppercase tracking-[0.3em] md:tracking-[0.5em] leading-relaxed break-words drop-shadow max-w-xl mb-8">{hero.subheading}</p>
                     )}
                     <Link
                         href="/catalog"
