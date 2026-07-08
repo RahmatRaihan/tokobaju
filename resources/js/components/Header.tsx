@@ -49,14 +49,14 @@ export function Header() {
                 hidden ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'
             }`}
         >
-            <div className="relative max-w-[1400px] mx-auto px-4 lg:px-8 flex items-center justify-between h-24">
+            <div className="relative max-w-[1400px] mx-auto px-4 lg:px-8 flex items-center justify-between h-24 md:h-32">
                 {/* Logo */}
                 <div className="flex-shrink-0">
                     <Link href="/" className="block" aria-label="INSKYLXSTR — Home">
                         <img
                             src="/images/logo-brand.png"
                             alt="INSKYLXSTR"
-                            className="h-[72px] md:h-[88px] w-auto max-w-[150px] md:max-w-[220px] object-contain transition-all"
+                            className="h-[88px] md:h-[112px] w-auto max-w-[190px] md:max-w-[280px] object-contain transition-all"
                         />
                     </Link>
                 </div>
