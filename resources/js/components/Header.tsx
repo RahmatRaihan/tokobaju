@@ -1,5 +1,5 @@
 import { ShoppingCart, User, Menu, Settings, LogOut, Package } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useCart } from '@/lib/cart';
@@ -9,13 +9,43 @@ export function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isAccountOpen, setIsAccountOpen] = useState(false);
     const { auth } = usePage<PageProps>().props;
+    const { component } = usePage();
     const { count } = useCart();
     const { openCart } = useUi();
 
     const logout = () => router.post('/logout');
 
+    // On the landing page only: fade the navbar out when scrolling down past
+    // the hero, and fade it back in when scrolling up.
+    const isLanding = component === 'Home';
+    const [hidden, setHidden] = useState(false);
+    const lastScroll = useRef(0);
+
+    useEffect(() => {
+        if (!isLanding) {
+            setHidden(false);
+            return;
+        }
+        const onScroll = () => {
+            const y = window.scrollY;
+            // Only start hiding once past a threshold; show again on scroll-up.
+            if (y > lastScroll.current && y > 120) {
+                setHidden(true);
+            } else if (y < lastScroll.current) {
+                setHidden(false);
+            }
+            lastScroll.current = y;
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, [isLanding]);
+
     return (
-        <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
+        <header
+            className={`sticky top-0 z-50 bg-white border-b border-gray-100 transition-all duration-500 ${
+                hidden ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'
+            }`}
+        >
             <div className="relative max-w-[1400px] mx-auto px-4 lg:px-8 flex items-center justify-between h-24">
                 {/* Logo */}
                 <div className="flex-shrink-0">
