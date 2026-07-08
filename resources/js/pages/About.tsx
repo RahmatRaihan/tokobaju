@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import StoreLayout from '@/layouts/StoreLayout';
 
 interface AboutProps {
-    about: { text: string | null; email: string | null; image: string | null; image2: string | null };
+    about: { text: string | null; image: string | null; image2: string | null };
 }
 
 const DEFAULT_ABOUT_IMAGE =
@@ -65,12 +65,6 @@ export default function About({ about }: AboutProps) {
                             ) : (
                                 <p>INSKYLXSTR — streetwear from Jakarta.</p>
                             )}
-                        </div>
-
-                        <div className="pt-6">
-                            <h3 className="text-lg font-bold uppercase tracking-wider mb-2">Contact</h3>
-                            {about.email && <p className="text-gray-600 font-medium">{about.email}</p>}
-                            <p className="text-gray-600 font-medium">Jakarta, Indonesia</p>
                         </div>
                     </motion.div>
                 </div>
