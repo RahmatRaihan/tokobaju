@@ -28,6 +28,7 @@ class SettingController extends Controller
                 'hero_image_url' => image_url(Setting::get('hero_image')),
                 'about_text' => Setting::get('about_text'),
                 'about_image_url' => image_url(Setting::get('about_image')),
+                'about_image_2_url' => image_url(Setting::get('about_image_2')),
             ],
             'community_photos' => CommunityPhoto::with('product:id,name')->orderBy('id')->get()
                 ->map(fn ($p) => [
@@ -55,6 +56,7 @@ class SettingController extends Controller
             'about_text' => ['nullable', 'string'],
             'hero_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'about_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'about_image_2' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
         foreach (['store_name', 'store_email', 'whatsapp_number', 'instagram_url', 'hero_heading', 'hero_subheading', 'about_text'] as $key) {
@@ -77,9 +79,10 @@ class SettingController extends Controller
             Setting::put('hero_image', $path);
         }
 
-        if ($request->hasFile('about_image')) {
-            $path = ImageOptimizer::store($request->file('about_image'), 'settings');
-            Setting::put('about_image', $path);
+        foreach (['about_image', 'about_image_2'] as $key) {
+            if ($request->hasFile($key)) {
+                Setting::put($key, ImageOptimizer::store($request->file($key), 'settings'));
+            }
         }
 
         return back()->with('success', 'Settings saved.');

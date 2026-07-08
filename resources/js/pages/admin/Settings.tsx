@@ -28,6 +28,7 @@ interface Props {
         hero_image_url: string | null;
         about_text: string | null;
         about_image_url: string | null;
+        about_image_2_url: string | null;
     };
     community_photos: ImageItem[];
     gallery_images: ImageItem[];
@@ -145,6 +146,7 @@ export default function Settings({ settings, community_photos, gallery_images, p
         about_text: string;
         hero_image: File | null;
         about_image: File | null;
+        about_image_2: File | null;
     }>({
         store_name: settings.store_name ?? '',
         store_email: settings.store_email ?? '',
@@ -155,6 +157,7 @@ export default function Settings({ settings, community_photos, gallery_images, p
         about_text: settings.about_text ?? '',
         hero_image: null,
         about_image: null,
+        about_image_2: null,
     });
 
     const submit = (e: FormEvent) => {
@@ -225,6 +228,13 @@ export default function Settings({ settings, community_photos, gallery_images, p
                             <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setData('about_image', e.target.files?.[0] ?? null)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
                             <p className="text-xs text-gray-400 mt-1">Shown on the public About page. Leave empty to keep the current image.</p>
                             {errors.about_image && <p className="text-red-500 text-xs mt-1">{errors.about_image}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Quality Image (section 3)</label>
+                            {settings.about_image_2_url && <img src={settings.about_image_2_url} alt="Quality" className="mb-2 w-full sm:max-w-sm h-40 object-contain bg-gray-50 rounded-lg border border-gray-200" />}
+                            <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setData('about_image_2', e.target.files?.[0] ?? null)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                            <p className="text-xs text-gray-400 mt-1">Product shot for the “Uncompromising Quality” section.</p>
+                            {errors.about_image_2 && <p className="text-red-500 text-xs mt-1">{errors.about_image_2}</p>}
                         </div>
                     </div>
 
