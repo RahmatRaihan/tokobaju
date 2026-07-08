@@ -71,7 +71,12 @@ export function Header() {
 
                 {/* Actions */}
                 <div className="flex items-center space-x-6">
-                    <button onClick={openCart} className="flex items-center space-x-2 hover:opacity-70 transition-opacity">
+                    {/* Guests go straight to login — they can't check out anyway. */}
+                    <button
+                        onClick={() => (auth.user ? openCart() : router.visit('/login'))}
+                        aria-label={auth.user ? 'Open cart' : 'Log in to view your cart'}
+                        className="flex items-center space-x-2 hover:opacity-70 transition-opacity"
+                    >
                         <span className="text-sm font-bold hidden sm:inline-block">CART</span>
                         <div className="relative">
                             <ShoppingCart className="w-5 h-5" />

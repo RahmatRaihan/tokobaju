@@ -46,9 +46,9 @@ export function CartDrawer() {
                                 <p className="text-sm font-medium text-gray-500 text-center px-8 pb-4">
                                     Looks like you haven't added anything to your cart yet.
                                 </p>
-                                <button onClick={closeCart} className="px-8 py-3 bg-black text-white text-sm font-bold rounded-sm hover:bg-gray-900 transition-colors uppercase tracking-widest w-full max-w-[280px]">
+                                <Link href="/catalog" onClick={closeCart} className="block text-center px-8 py-3 bg-black text-white text-sm font-bold rounded-sm hover:bg-gray-900 transition-colors uppercase tracking-widest w-full max-w-[280px]">
                                     Continue Shopping
-                                </button>
+                                </Link>
                             </div>
                         ) : (
                             <>
@@ -92,23 +92,20 @@ export function CartDrawer() {
                                         <span className="text-sm font-bold uppercase text-gray-600">Subtotal</span>
                                         <span className="text-lg font-bold">{formatRupiah(subtotal)}</span>
                                     </div>
-                                    {auth.user ? (
-                                        <Link
-                                            href="/checkout"
-                                            onClick={closeCart}
-                                            className="block text-center w-full bg-black text-white font-bold py-4 rounded-xl hover:bg-gray-900 transition-colors tracking-wide uppercase text-sm"
-                                        >
-                                            Checkout
-                                        </Link>
-                                    ) : (
-                                        <Link
-                                            href="/login"
-                                            onClick={closeCart}
-                                            className="block text-center w-full bg-black text-white font-bold py-4 rounded-xl hover:bg-gray-900 transition-colors tracking-wide uppercase text-sm"
-                                        >
-                                            Login to Checkout
-                                        </Link>
-                                    )}
+                                    <Link
+                                        href={auth.user ? '/checkout' : '/login'}
+                                        onClick={closeCart}
+                                        className="block text-center w-full bg-black text-white font-bold py-4 rounded-xl hover:bg-gray-900 transition-colors tracking-wide uppercase text-sm"
+                                    >
+                                        {auth.user ? 'Checkout' : 'Login to Checkout'}
+                                    </Link>
+                                    <Link
+                                        href="/catalog"
+                                        onClick={closeCart}
+                                        className="block text-center w-full mt-3 border border-gray-300 text-gray-700 font-bold py-3 rounded-xl hover:border-black hover:text-black transition-colors tracking-wide uppercase text-xs"
+                                    >
+                                        Continue Shopping
+                                    </Link>
                                 </div>
                             </>
                         )}

@@ -164,28 +164,42 @@ class CheckoutController extends Controller
     {
         $number = preg_replace('/\D/', '', (string) Setting::get('whatsapp_number', ''));
 
-        $addressParts = array_filter([
-            $order->shipping_address,
-            $order->city,
-            $order->province,
-            $order->postal_code,
-        ]);
-
         $lines = [];
         $lines[] = 'Halo INSKYLXSTR, saya mau order:';
         $lines[] = '';
         $lines[] = "No. Order: {$order->order_number}";
-        foreach ($order->items as $item) {
-            $label = $item->variant_label ? " ({$item->variant_label})" : '';
-            $lines[] = "- {$item->product_name}{$label} x{$item->quantity} = ".format_rupiah($item->line_total);
+        $lines[] = 'Tanggal: '.$order->created_at->format('d M Y, H:i');
+        $lines[] = '';
+        $lines[] = '*DETAIL PESANAN*';
+
+        $totalQty = 0;
+
+        foreach ($order->items as $i => $item) {
+            $totalQty += $item->quantity;
+
+            $lines[] = ($i + 1).". {$item->product_name}";
+            // Seeded single-variant products carry the placeholder label "Default".
+            if ($item->variant_label && $item->variant_label !== 'Default') {
+                $lines[] = "   Varian: {$item->variant_label}";
+            }
+            $lines[] = "   Jumlah: {$item->quantity} x ".format_rupiah($item->unit_price);
+            $lines[] = '   Subtotal: '.format_rupiah($item->line_total);
         }
+
         $lines[] = '';
-        $lines[] = 'Total: '.format_rupiah($order->total);
+        $lines[] = "*Total ({$totalQty} item): ".format_rupiah($order->total).'*';
         $lines[] = '';
+        $lines[] = '*DATA PENGIRIMAN*';
         $lines[] = "Nama: {$order->customer_name}";
         $lines[] = "No. HP: {$order->customer_phone}";
-        if (! empty($addressParts)) {
-            $lines[] = 'Alamat: '.implode(', ', $addressParts);
+        if ($order->customer_email) {
+            $lines[] = "Email: {$order->customer_email}";
+        }
+        $lines[] = "Alamat: {$order->shipping_address}";
+        $lines[] = "Kota: {$order->city}";
+        $lines[] = "Provinsi: {$order->province}";
+        if ($order->postal_code) {
+            $lines[] = "Kode Pos: {$order->postal_code}";
         }
         if ($order->notes) {
             $lines[] = "Catatan: {$order->notes}";
