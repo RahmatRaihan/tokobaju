@@ -15,14 +15,6 @@ interface CatalogProps {
     filters: Filters;
 }
 
-const sortOptions: { value: string; label: string }[] = [
-    { value: 'featured', label: 'Featured' },
-    { value: 'price_asc', label: 'Price, low to high' },
-    { value: 'price_desc', label: 'Price, high to low' },
-    { value: 'az', label: 'Alphabetically, A-Z' },
-    { value: 'za', label: 'Alphabetically, Z-A' },
-];
-
 export default function Catalog({ products, categories, filters }: CatalogProps) {
     const [quickView, setQuickView] = useState<string | null>(null);
     const [local, setLocal] = useState<Filters>(filters);
@@ -41,7 +33,6 @@ export default function Catalog({ products, categories, filters }: CatalogProps)
         if (next.category) query.category = next.category;
         if (next.availability && next.availability !== 'all') query.availability = next.availability;
         if (next.price && next.price !== 'all') query.price = next.price;
-        if (next.sort && next.sort !== 'featured') query.sort = next.sort;
 
         router.get('/catalog', query, { preserveState: true, preserveScroll: true, replace: true });
     }, []);
@@ -74,7 +65,7 @@ export default function Catalog({ products, categories, filters }: CatalogProps)
                     />
 
                     <div className="flex-1">
-                        {/* Mobile toolbar: search + filter button + sort (compact) */}
+                        {/* Mobile toolbar: search + filter button (compact) */}
                         <div className="lg:hidden mb-6 space-y-3">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -86,49 +77,23 @@ export default function Catalog({ products, categories, filters }: CatalogProps)
                                     className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                                 />
                             </div>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => setFilterOpen(true)}
-                                    className="flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold hover:border-black transition-colors"
-                                >
-                                    <SlidersHorizontal className="w-4 h-4" />
-                                    Filter
-                                    {activeFilters > 0 && (
-                                        <span className="bg-black text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">{activeFilters}</span>
-                                    )}
-                                </button>
-                                <div className="flex-1 flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-bold">
-                                    <span className="text-gray-500">Sort</span>
-                                    <select
-                                        className="flex-1 bg-transparent focus:outline-none cursor-pointer"
-                                        value={local.sort}
-                                        onChange={(e) => patch({ sort: e.target.value })}
-                                    >
-                                        {sortOptions.map((o) => (
-                                            <option key={o.value} value={o.value}>{o.label}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
+                            <button
+                                onClick={() => setFilterOpen(true)}
+                                className="w-full flex items-center justify-center gap-2 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold hover:border-black transition-colors"
+                            >
+                                <SlidersHorizontal className="w-4 h-4" />
+                                Filter
+                                {activeFilters > 0 && (
+                                    <span className="bg-black text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">{activeFilters}</span>
+                                )}
+                            </button>
                         </div>
 
-                        {/* Desktop header: title + sort */}
-                        <div className="hidden lg:flex justify-between items-center mb-8 gap-4">
+                        {/* Desktop header: title */}
+                        <div className="hidden lg:flex items-center mb-8">
                             <h1 className="text-2xl font-light text-gray-700">
                                 All Products <span className="text-gray-400 text-lg">({products.total})</span>
                             </h1>
-                            <div className="flex items-center space-x-2 border border-gray-200 rounded px-3 py-1.5 text-sm font-bold">
-                                <span className="text-gray-900">sort :</span>
-                                <select
-                                    className="bg-transparent focus:outline-none cursor-pointer"
-                                    value={local.sort}
-                                    onChange={(e) => patch({ sort: e.target.value })}
-                                >
-                                    {sortOptions.map((o) => (
-                                        <option key={o.value} value={o.value}>{o.label}</option>
-                                    ))}
-                                </select>
-                            </div>
                         </div>
 
                         {/* Mobile result count */}
