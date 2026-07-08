@@ -14,6 +14,10 @@ class OrderController extends Controller
 {
     public function index(Request $request): Response
     {
+        // Read the previous "seen" mark before stamping it, so this page can still
+        // highlight which rows are the new ones.
+        $seenAt = $request->user()->orders_seen_at;
+
         $orders = Order::query()
             ->withCount('items')
             ->when($request->string('status')->value(), fn ($q, $s) => $q->where('status', $s))
@@ -33,7 +37,14 @@ class OrderController extends Controller
             'status' => $o->status,
             'items_count' => $o->items_count,
             'created_at' => $o->created_at->format('d M Y H:i'),
+            'is_new' => $seenAt !== null && $o->created_at->gt($seenAt),
         ]);
+
+        // Mark as seen — the shared `new_orders_count` closure runs after this, so the
+        // sidebar badge clears in the very response that renders this page.
+        $user = $request->user();
+        $user->orders_seen_at = now();
+        $user->save();
 
         return Inertia::render('admin/orders/Index', [
             'orders' => $orders,

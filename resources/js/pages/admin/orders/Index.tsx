@@ -15,6 +15,7 @@ interface AdminOrder {
     status: string;
     items_count: number;
     created_at: string;
+    is_new: boolean;
 }
 
 interface Props {
@@ -89,9 +90,10 @@ export default function Index({ orders, statuses, filters }: Props) {
                                 <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-400">No orders found.</td></tr>
                             ) : (
                                 orders.data.map((o) => (
-                                    <tr key={o.id} className="hover:bg-gray-50">
+                                    <tr key={o.id} className={`hover:bg-gray-50 ${o.is_new ? 'bg-green-50/60' : ''}`}>
                                         <td className="px-6 py-4 font-bold">
                                             <Link href={`/admin/orders/${o.id}`} className="hover:underline">{o.order_number}</Link>
+                                            {o.is_new && <span className="ml-2 text-[10px] bg-green-500 text-white px-1.5 py-0.5 rounded uppercase align-middle">New</span>}
                                         </td>
                                         <td className="px-6 py-4">
                                             <div>{o.customer_name}</div>
@@ -103,9 +105,15 @@ export default function Index({ orders, statuses, filters }: Props) {
                                             <span className={`px-2 py-1 text-xs font-bold rounded-sm capitalize ${statusColors[o.status] ?? 'bg-gray-100'}`}>{o.status}</span>
                                         </td>
                                         <td className="px-6 py-4 text-gray-500 whitespace-nowrap">{o.created_at}</td>
-                                        <td className="px-6 py-4 text-right whitespace-nowrap">
-                                            <Link href={`/admin/orders/${o.id}`} className="text-gray-500 hover:text-black p-2 inline-block"><Eye className="w-4 h-4" /></Link>
-                                            <button onClick={() => destroy(o.id, o.order_number)} className="text-red-500 hover:text-red-700 p-2"><Trash2 className="w-4 h-4" /></button>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center justify-end gap-1">
+                                                <Link href={`/admin/orders/${o.id}`} className="text-gray-500 hover:text-black p-2 rounded-sm hover:bg-gray-100" title="View" aria-label={`View order ${o.order_number}`}>
+                                                    <Eye className="w-4 h-4" />
+                                                </Link>
+                                                <button onClick={() => destroy(o.id, o.order_number)} className="text-red-500 hover:text-red-700 p-2 rounded-sm hover:bg-red-50" title="Delete" aria-label={`Delete order ${o.order_number}`}>
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

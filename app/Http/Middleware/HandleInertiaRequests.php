@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Order;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -56,6 +57,11 @@ class HandleInertiaRequests extends Middleware
                 'instagram_url' => Setting::get('instagram_url'),
                 'store_email' => Setting::get('store_email'),
             ],
+            // Closure so it resolves AFTER the controller ran — opening /admin/orders
+            // stamps orders_seen_at, so the badge is already 0 in that same response.
+            'new_orders_count' => fn () => $user?->isAdmin()
+                ? Order::when($user->orders_seen_at, fn ($q, $seen) => $q->where('created_at', '>', $seen))->count()
+                : 0,
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

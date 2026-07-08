@@ -17,6 +17,7 @@ export interface SiteInfo {
 export interface PageProps {
     auth: { user: AuthUser | null };
     site: SiteInfo;
+    new_orders_count?: number;
     flash: {
         success: string | null;
         error: string | null;
