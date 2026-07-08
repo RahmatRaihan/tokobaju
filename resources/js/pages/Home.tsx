@@ -23,11 +23,11 @@ export default function Home({ featured, hero }: HomeProps) {
                 {hero.image && (
                     <img src={hero.image} alt={hero.heading} className="w-full h-full object-cover object-center opacity-90" />
                 )}
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pt-[45vh] sm:pt-[50vh]">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:pt-[50vh]">
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="font-display text-white text-5xl sm:text-7xl lg:text-8xl uppercase tracking-wide mb-4 drop-shadow-lg"
+                        className="font-display text-white text-5xl md:text-6xl uppercase tracking-wide mb-4 drop-shadow-lg"
                     >
                         {hero.heading}
                     </motion.h1>
