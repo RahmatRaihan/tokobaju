@@ -27,18 +27,22 @@ export default function Home({ featured, hero }: HomeProps) {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-white text-4xl sm:text-6xl font-black uppercase italic tracking-tighter mb-4 drop-shadow-lg"
+                        className="font-display text-white text-5xl sm:text-7xl lg:text-8xl uppercase tracking-wide mb-4 drop-shadow-lg"
                     >
                         {hero.heading}
                     </motion.h1>
                     {hero.subheading && (
-                        <p className="text-white/90 max-w-xl mb-6 font-medium drop-shadow">{hero.subheading}</p>
+                        <p className="text-white/90 max-w-xl mb-8 font-medium uppercase tracking-wide drop-shadow">{hero.subheading}</p>
                     )}
                     <Link
                         href="/catalog"
-                        className="border border-white text-white px-8 py-2.5 rounded-[20px] font-bold text-sm hover:bg-white hover:text-black transition-colors shadow-lg backdrop-blur-sm bg-black/20"
+                        className="group relative overflow-hidden border-2 border-white text-white px-12 py-4 font-bold text-sm sm:text-base uppercase tracking-[0.2em] shadow-lg"
                     >
-                        SHOP NOW
+                        <span className="relative z-10 transition-colors duration-300 group-hover:text-black">
+                            Explore Collection
+                        </span>
+                        {/* White sweep from left on hover */}
+                        <span className="absolute inset-0 bg-white -translate-x-full transition-transform duration-300 ease-out group-hover:translate-x-0" />
                     </Link>
                 </div>
             </div>
