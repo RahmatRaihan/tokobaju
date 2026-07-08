@@ -32,7 +32,7 @@ export default function Gallery({ images }: GalleryProps) {
                 {images.length === 0 ? (
                     <p className="text-center text-gray-400 py-24">No gallery images yet.</p>
                 ) : (
-                    {/* Masonry (Pinterest-style): CSS columns keep each image's natural height */}
+                    /* Masonry (Pinterest-style): CSS columns keep each image's natural height */
                     <div className="columns-2 md:columns-3 lg:columns-4 gap-4">
                         {images.map((image, index) => (
                             <motion.div
