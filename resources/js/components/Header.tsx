@@ -26,8 +26,8 @@ export function Header() {
             setOpacity(1);
             return;
         }
-        const FADE_START = 40; // px — start fading almost immediately
-        const FADE_END = 380; // px — fully gone by here
+        const FADE_START = 20; // px — start fading almost immediately
+        const FADE_END = 260; // px — fully gone by here
         const onScroll = () => {
             const y = window.scrollY;
             const next = 1 - (y - FADE_START) / (FADE_END - FADE_START);
@@ -40,8 +40,8 @@ export function Header() {
 
     return (
         <header
-            style={{ opacity }}
-            className={`sticky top-0 z-50 bg-white border-b border-gray-100 transition-opacity duration-200 ${
+            style={{ opacity, transform: `translateY(${(1 - opacity) * -20}px)` }}
+            className={`sticky top-0 z-50 bg-white border-b border-gray-100 ${
                 opacity < 0.05 ? 'pointer-events-none' : ''
             }`}
         >
