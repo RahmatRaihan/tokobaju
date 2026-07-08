@@ -27,7 +27,7 @@ export default function Home({ featured, hero }: HomeProps) {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="font-display text-white text-5xl md:text-6xl uppercase tracking-wide mb-4 drop-shadow-lg"
+                        className="text-4xl md:text-6xl lg:text-[7vw] font-black uppercase tracking-tighter text-white leading-[0.85] drop-shadow-lg mb-4"
                     >
                         {hero.heading}
                     </motion.h1>
