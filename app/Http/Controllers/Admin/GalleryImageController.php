@@ -19,12 +19,15 @@ class GalleryImageController extends Controller
             'images' => ['required', 'array', 'max:20'],
             'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'caption' => ['nullable', 'string', 'max:255'],
+            'product_id' => ['nullable', 'integer', 'exists:products,id'],
         ]);
 
         $sort = GalleryImage::max('sort_order') ?? 0;
 
+        // One product per batch — the whole selection is assumed to be the same look.
         foreach ($data['images'] as $file) {
             GalleryImage::create([
+                'product_id' => $data['product_id'] ?? null,
                 'image_path' => ImageOptimizer::store($file, 'gallery'),
                 'caption' => $data['caption'] ?? null,
                 'sort_order' => ++$sort,

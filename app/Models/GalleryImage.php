@@ -5,11 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['image_path', 'caption', 'sort_order', 'is_active'])]
+#[Fillable(['product_id', 'image_path', 'caption', 'sort_order', 'is_active'])]
 class GalleryImage extends Model
 {
     protected $appends = ['url'];
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
 
     protected function casts(): array
     {

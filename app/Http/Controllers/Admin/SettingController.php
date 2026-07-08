@@ -39,8 +39,14 @@ class SettingController extends Controller
                     'product_id' => $p->product_id,
                     'product_name' => $p->product?->name,
                 ]),
-            'gallery_images' => GalleryImage::orderBy('id')->get()
-                ->map(fn ($g) => ['id' => $g->id, 'url' => $g->url, 'caption' => $g->caption]),
+            'gallery_images' => GalleryImage::with('product:id,name')->orderBy('id')->get()
+                ->map(fn ($g) => [
+                    'id' => $g->id,
+                    'url' => $g->url,
+                    'caption' => $g->caption,
+                    'product_id' => $g->product_id,
+                    'product_name' => $g->product?->name,
+                ]),
             'products' => Product::orderBy('name')->get(['id', 'name']),
         ]);
     }

@@ -275,7 +275,7 @@ export default function Settings({ settings, community_photos, gallery_images, p
                 <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 space-y-8">
                     <ImageManager title="Community Photos" items={community_photos} storeUrl="/admin/community-photos" destroyBase="/admin/community-photos" products={products} />
                     <hr className="border-gray-100" />
-                    <ImageManager title="Gallery Images" items={gallery_images} storeUrl="/admin/gallery-images" destroyBase="/admin/gallery-images" />
+                    <ImageManager title="Gallery Images" items={gallery_images} storeUrl="/admin/gallery-images" destroyBase="/admin/gallery-images" products={products} />
                 </div>
             </div>
         </AdminLayout>
