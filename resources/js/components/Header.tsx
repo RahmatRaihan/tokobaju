@@ -1,5 +1,5 @@
 import { ShoppingCart, User, Menu, Settings, LogOut, Package } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useCart } from '@/lib/cart';
@@ -15,35 +15,34 @@ export function Header() {
 
     const logout = () => router.post('/logout');
 
-    // On the landing page only: fade the navbar out when scrolling down past
-    // the hero, and fade it back in when scrolling up.
+    // On the landing page only: gradually fade the navbar out as you scroll
+    // down — fully visible at the top, transparent (and gone) once past the
+    // hero. Opacity follows the scroll position for a smooth fade.
     const isLanding = component === 'Home';
-    const [hidden, setHidden] = useState(false);
-    const lastScroll = useRef(0);
+    const [opacity, setOpacity] = useState(1);
 
     useEffect(() => {
         if (!isLanding) {
-            setHidden(false);
+            setOpacity(1);
             return;
         }
+        const FADE_START = 40; // px — start fading almost immediately
+        const FADE_END = 380; // px — fully gone by here
         const onScroll = () => {
             const y = window.scrollY;
-            // Only start hiding once past a threshold; show again on scroll-up.
-            if (y > lastScroll.current && y > 120) {
-                setHidden(true);
-            } else if (y < lastScroll.current) {
-                setHidden(false);
-            }
-            lastScroll.current = y;
+            const next = 1 - (y - FADE_START) / (FADE_END - FADE_START);
+            setOpacity(Math.min(1, Math.max(0, next)));
         };
+        onScroll();
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
     }, [isLanding]);
 
     return (
         <header
-            className={`sticky top-0 z-50 bg-white border-b border-gray-100 transition-all duration-500 ${
-                hidden ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'
+            style={{ opacity }}
+            className={`sticky top-0 z-50 bg-white border-b border-gray-100 transition-opacity duration-200 ${
+                opacity < 0.05 ? 'pointer-events-none' : ''
             }`}
         >
             <div className="relative max-w-[1400px] mx-auto px-4 lg:px-8 flex items-center justify-between h-24">
