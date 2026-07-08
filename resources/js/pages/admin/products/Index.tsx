@@ -102,13 +102,15 @@ export default function Index({ products, filters }: Props) {
                                                 <span className="px-2 py-1 text-xs font-bold rounded-sm bg-green-100 text-green-700">Active</span>
                                             )}
                                         </td>
-                                        <td className="px-6 py-4 text-right whitespace-nowrap">
-                                            <Link href={`/admin/products/${p.id}/edit`} className="text-gray-500 hover:text-black p-2 inline-block" title="Edit">
-                                                <Edit2 className="w-4 h-4" />
-                                            </Link>
-                                            <button onClick={() => destroy(p.id, p.name)} className="text-red-500 hover:text-red-700 p-2" title="Delete">
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center justify-end gap-1">
+                                                <Link href={`/admin/products/${p.id}/edit`} className="text-gray-500 hover:text-black p-2 rounded-sm hover:bg-gray-100" title="Edit" aria-label={`Edit ${p.name}`}>
+                                                    <Edit2 className="w-4 h-4" />
+                                                </Link>
+                                                <button onClick={() => destroy(p.id, p.name)} className="text-red-500 hover:text-red-700 p-2 rounded-sm hover:bg-red-50" title="Delete" aria-label={`Delete ${p.name}`}>
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
