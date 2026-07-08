@@ -23,12 +23,15 @@ RUN { \
         echo 'opcache.revalidate_freq=0'; \
     } > /usr/local/etc/php/conf.d/opcache.ini
 
-# App PHP limits. post_max_size must fit SEVERAL 10MB product images in one POST,
-# otherwise PHP drops the request before Laravel's max:10240 rule ever runs.
+# App PHP limits. Each must sit ABOVE the app-level rule it backs, otherwise PHP kills
+# the request before Laravel's validation can return a readable error:
+#   post_max_size    > several 10MB product images in one POST  (max:10240)
+#   max_file_uploads > the 20-image batch rule                  (images -> max:20)
 RUN { \
         echo 'memory_limit=512M'; \
         echo 'upload_max_filesize=12M'; \
         echo 'post_max_size=64M'; \
+        echo 'max_file_uploads=30'; \
     } > /usr/local/etc/php/conf.d/app.ini
 
 # Composer (copied from the official image).

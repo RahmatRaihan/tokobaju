@@ -13,23 +13,31 @@ class CommunityPhotoController extends Controller
 {
     public function store(Request $request): RedirectResponse
     {
+        // ponytail: array capped at 20 because PHP's max_file_uploads default is 20 —
+        // a higher cap here would silently drop the extras. Raise both together.
         $data = $request->validate([
-            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'images' => ['required', 'array', 'max:20'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'caption' => ['nullable', 'string', 'max:255'],
             'product_id' => ['nullable', 'integer', 'exists:products,id'],
         ]);
 
-        $path = ImageOptimizer::store($data['image'], 'community');
+        $sort = CommunityPhoto::max('sort_order') ?? 0;
 
-        CommunityPhoto::create([
-            'product_id' => $data['product_id'] ?? null,
-            'image_path' => $path,
-            'caption' => $data['caption'] ?? null,
-            'sort_order' => (CommunityPhoto::max('sort_order') ?? 0) + 1,
-            'is_active' => true,
-        ]);
+        // One product per batch — the whole selection is assumed to be the same look.
+        foreach ($data['images'] as $file) {
+            CommunityPhoto::create([
+                'product_id' => $data['product_id'] ?? null,
+                'image_path' => ImageOptimizer::store($file, 'community'),
+                'caption' => $data['caption'] ?? null,
+                'sort_order' => ++$sort,
+                'is_active' => true,
+            ]);
+        }
 
-        return back()->with('success', 'Community photo added.');
+        $n = count($data['images']);
+
+        return back()->with('success', $n === 1 ? 'Community photo added.' : "{$n} community photos added.");
     }
 
     public function destroy(CommunityPhoto $communityPhoto): RedirectResponse

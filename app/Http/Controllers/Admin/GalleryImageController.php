@@ -13,21 +13,28 @@ class GalleryImageController extends Controller
 {
     public function store(Request $request): RedirectResponse
     {
+        // ponytail: array capped at 20 because PHP's max_file_uploads default is 20 —
+        // a higher cap here would silently drop the extras. Raise both together.
         $data = $request->validate([
-            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'images' => ['required', 'array', 'max:20'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'caption' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $path = ImageOptimizer::store($data['image'], 'gallery');
+        $sort = GalleryImage::max('sort_order') ?? 0;
 
-        GalleryImage::create([
-            'image_path' => $path,
-            'caption' => $data['caption'] ?? null,
-            'sort_order' => (GalleryImage::max('sort_order') ?? 0) + 1,
-            'is_active' => true,
-        ]);
+        foreach ($data['images'] as $file) {
+            GalleryImage::create([
+                'image_path' => ImageOptimizer::store($file, 'gallery'),
+                'caption' => $data['caption'] ?? null,
+                'sort_order' => ++$sort,
+                'is_active' => true,
+            ]);
+        }
 
-        return back()->with('success', 'Gallery image added.');
+        $n = count($data['images']);
+
+        return back()->with('success', $n === 1 ? 'Gallery image added.' : "{$n} gallery images added.");
     }
 
     public function destroy(GalleryImage $galleryImage): RedirectResponse

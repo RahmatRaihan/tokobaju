@@ -10,6 +10,7 @@ use App\Models\Setting;
 use App\Support\ImageOptimizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -59,9 +60,13 @@ class SettingController extends Controller
             'about_image_2' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
+        // The storefront renders these uppercase; store them that way so the admin field
+        // and the public page always agree (and a hand-crafted POST can't sneak in lowercase).
+        $upper = ['hero_heading', 'hero_subheading'];
+
         foreach (['store_name', 'store_email', 'whatsapp_number', 'instagram_url', 'hero_heading', 'hero_subheading', 'about_text'] as $key) {
             if (array_key_exists($key, $data)) {
-                Setting::put($key, $data[$key]);
+                Setting::put($key, in_array($key, $upper, true) ? Str::upper($data[$key] ?? '') : $data[$key]);
             }
         }
 

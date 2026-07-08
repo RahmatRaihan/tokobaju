@@ -17,6 +17,9 @@ interface ProductOption {
     name: string;
 }
 
+// Must match the `images => max:20` rule in the controllers.
+const MAX_BATCH = 20;
+
 interface Props {
     settings: {
         store_name: string | null;
@@ -50,30 +53,36 @@ function ImageManager({
 }) {
     const fileRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
-    const [pendingFile, setPendingFile] = useState<File | null>(null);
+    const [pendingFiles, setPendingFiles] = useState<File[]>([]);
     const [productId, setProductId] = useState('');
     const confirm = useConfirm();
 
-    const doUpload = (file: File, product: string) => {
+    const doUpload = (files: File[], product: string) => {
         setUploading(true);
-        router.post(storeUrl, { image: file, product_id: product || undefined }, {
+        router.post(storeUrl, { images: files, product_id: product || undefined }, {
             forceFormData: true,
             preserveScroll: true,
             onFinish: () => {
                 setUploading(false);
-                setPendingFile(null);
+                setPendingFiles([]);
                 setProductId('');
                 if (fileRef.current) fileRef.current.value = '';
             },
         });
     };
 
-    const onFilePicked = (file: File) => {
+    const onFilesPicked = (files: File[]) => {
+        // Server rejects >20 per batch; say so here instead of wasting the upload.
+        if (files.length > MAX_BATCH) {
+            alert(`Select at most ${MAX_BATCH} images at a time (you picked ${files.length}). Upload them in batches.`);
+            if (fileRef.current) fileRef.current.value = '';
+            return;
+        }
         // For community (products provided), let admin pick a product before uploading.
         if (products) {
-            setPendingFile(file);
+            setPendingFiles(files);
         } else {
-            doUpload(file, '');
+            doUpload(files, '');
         }
     };
 
@@ -105,32 +114,36 @@ function ImageManager({
                 {items.length === 0 && <p className="text-sm text-gray-400">No images yet.</p>}
             </div>
 
-            {/* Community: choose a product for the picked file, then upload */}
-            {products && pendingFile ? (
+            {/* Community: choose one product for the whole selection, then upload */}
+            {products && pendingFiles.length > 0 ? (
                 <div className="flex flex-wrap items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg p-3">
-                    <span className="text-sm text-gray-600">Link to product:</span>
+                    <span className="text-sm text-gray-600">
+                        {pendingFiles.length} photo{pendingFiles.length > 1 ? 's' : ''} → link to product:
+                    </span>
                     <select value={productId} onChange={(e) => setProductId(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
                         <option value="">— None (no Shop the Look) —</option>
                         {products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
-                    <button type="button" onClick={() => doUpload(pendingFile, productId)} disabled={uploading} className="bg-black text-white px-4 py-2 text-sm font-bold rounded-lg hover:bg-gray-800 disabled:opacity-60">
+                    <button type="button" onClick={() => doUpload(pendingFiles, productId)} disabled={uploading} className="bg-black text-white px-4 py-2 text-sm font-bold rounded-lg hover:bg-gray-800 disabled:opacity-60">
                         {uploading ? 'Uploading…' : 'Upload'}
                     </button>
-                    <button type="button" onClick={() => { setPendingFile(null); setProductId(''); }} className="text-sm text-gray-500 hover:text-black">Cancel</button>
+                    <button type="button" onClick={() => { setPendingFiles([]); setProductId(''); }} className="text-sm text-gray-500 hover:text-black">Cancel</button>
                 </div>
             ) : (
                 <label className="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-black cursor-pointer">
                     <Upload className="w-4 h-4" />
-                    {uploading ? 'Uploading…' : products ? 'Add photo (with product)' : 'Upload image'}
+                    {uploading ? 'Uploading…' : products ? 'Add photos (select one or many)' : 'Upload images (select one or many)'}
                     <input
                         ref={fileRef}
                         type="file"
+                        multiple
                         accept="image/jpeg,image/png,image/webp"
                         className="hidden"
-                        onChange={(e) => e.target.files?.[0] && onFilePicked(e.target.files[0])}
+                        onChange={(e) => e.target.files?.length && onFilesPicked(Array.from(e.target.files))}
                     />
                 </label>
             )}
+            <p className="text-xs text-gray-400 mt-2">Up to {MAX_BATCH} images at a time, 4MB each. No limit on the total.</p>
         </div>
     );
 }
@@ -200,18 +213,31 @@ export default function Settings({ settings, community_photos, gallery_images, p
                     {/* Hero */}
                     <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 space-y-4">
                         <h3 className="text-lg font-bold">Hero Banner</h3>
-                        {settings.hero_image_url && <img src={settings.hero_image_url} alt="Hero" className="w-full h-40 object-cover rounded-lg border border-gray-200" />}
+                        {settings.hero_image_url && (
+                            <div>
+                                {/* Same crop as the storefront hero (object-cover + object-center) at
+                                    a desktop-ish 16/9, so what you see here is what visitors get. */}
+                                <div className="relative w-full aspect-video overflow-hidden rounded-lg border border-gray-200 bg-gray-900">
+                                    <img src={settings.hero_image_url} alt="Hero preview" className="w-full h-full object-cover object-center opacity-90" />
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none">
+                                        <p className="text-2xl md:text-4xl font-black uppercase tracking-tighter text-white leading-[0.85] drop-shadow-lg">{data.hero_heading}</p>
+                                        <p className="mt-2 text-[8px] md:text-[10px] font-semibold text-gray-200 uppercase tracking-[0.3em] drop-shadow max-w-md">{data.hero_subheading}</p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1">Preview at 16:9. The live hero is full-screen, so a taller screen crops the sides less.</p>
+                            </div>
+                        )}
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Banner Image</label>
                             <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setData('hero_image', e.target.files?.[0] ?? null)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Heading</label>
-                            <input value={data.hero_heading} onChange={(e) => setData('hero_heading', e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-black" />
+                            <input value={data.hero_heading} onChange={(e) => setData('hero_heading', e.target.value.toUpperCase())} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm uppercase focus:outline-none focus:border-black" />
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Subheading</label>
-                            <input value={data.hero_subheading} onChange={(e) => setData('hero_subheading', e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-black" />
+                            <input value={data.hero_subheading} onChange={(e) => setData('hero_subheading', e.target.value.toUpperCase())} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm uppercase focus:outline-none focus:border-black" />
                         </div>
                     </div>
 

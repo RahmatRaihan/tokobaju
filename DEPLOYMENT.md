@@ -79,14 +79,22 @@ sudo tee /etc/php/8.4/cli/conf.d/99-inskylxstr.ini <<'INI'
 memory_limit = 512M
 upload_max_filesize = 12M
 post_max_size = 64M
+max_file_uploads = 30
 INI
 
 sudo systemctl restart inskylxstr-octane
 ```
 
-`post_max_size` must fit several images in one product POST, and Nginx's
-`client_max_body_size` (64M in `deploy/nginx.conf`) must be >= it. If either is
-too small the request is dropped **before** Laravel's `max:10240` rule runs.
+Every PHP limit must sit **above** the app rule it backs, or PHP kills the request
+before Laravel can return a readable error (you get a blank 500):
+
+| PHP setting | Backs | Must exceed |
+| --- | --- | --- |
+| `post_max_size` (64M) | product form with several images | total POST body |
+| `upload_max_filesize` (12M) | `max:10240` (10MB per image) | 10MB |
+| `max_file_uploads` (30) | `max:20` (images per batch) | 20 |
+
+Nginx's `client_max_body_size` (64M in `deploy/nginx.conf`) must be >= `post_max_size`.
 
 ## 5. Permissions
 
