@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewOrderMail;
 use App\Models\Order;
 use App\Models\ProductVariant;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -114,6 +117,8 @@ class CheckoutController extends Controller
             return $order->load('items');
         });
 
+        $this->notifyAdmin($order);
+
         $waUrl = $this->buildWhatsAppUrl($order);
 
         // Go to the customer's order detail page, passing the WhatsApp URL so
@@ -122,6 +127,29 @@ class CheckoutController extends Controller
             'order_number' => $order->order_number,
             'whatsapp_url' => $waUrl,
         ]);
+    }
+
+    /**
+     * Email the shop owner that an order landed. Queued, so a slow or dead SMTP
+     * server never delays checkout — and wrapped, so it can never lose the order
+     * the customer just placed.
+     */
+    private function notifyAdmin(Order $order): void
+    {
+        $to = Setting::get('store_email') ?: config('mail.from.address');
+
+        if (! $to) {
+            return;
+        }
+
+        try {
+            Mail::to($to)->queue(new NewOrderMail($order));
+        } catch (\Throwable $e) {
+            Log::error('Failed to queue new-order notification', [
+                'order_id' => $order->id,
+                'exception' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function generateOrderNumber(): string

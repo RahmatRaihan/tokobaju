@@ -26,7 +26,9 @@ router.on('invalid', (event) => {
 });
 
 createInertiaApp({
-    title: (title) => (title ? `${title} — ${appName}` : appName),
+    // Storefront tabs read just "INSKYLXSTR"; admin pages keep their page name so
+    // several open admin tabs stay tellable apart.
+    title: (title) => (title?.startsWith('Admin') ? `${title} — ${appName}` : appName),
     resolve: (name) =>
         resolvePageComponent(
             `./pages/${name}.tsx`,

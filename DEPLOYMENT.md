@@ -147,6 +147,10 @@ reloads Octane (zero downtime).
 - [ ] `APP_ENV=production`, `APP_DEBUG=false` in `.env`
 - [ ] `APP_KEY` generated
 - [ ] Real `MAIL_*` SMTP credentials set (OTP emails must actually send)
+- [ ] **Admin → Settings → Store Email** set to the inbox that should receive
+      new-order notifications (e.g. `inskylxstr3@gmail.com`)
+- [ ] `sudo systemctl status inskylxstr-queue` is **active** — new-order emails are
+      queued, so without the worker they are written to `jobs` and never sent
 - [ ] Admin password changed from any default (log in and update)
 - [ ] WhatsApp number set in **Admin → Settings** (format `62…`)
 - [ ] Hero / About / Community / Gallery images uploaded
