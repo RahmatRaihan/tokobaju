@@ -15,7 +15,11 @@ const menu = [
 export default function AdminLayout({ title, children }: { title: string; children: ReactNode }) {
     const { url, props } = usePage<PageProps>();
     const flash = props.flash;
-    const newOrders = props.new_orders_count ?? 0;
+    const badges: Record<string, number> = {
+        Orders: props.new_orders_count ?? 0,
+        Customers: props.new_customers_count ?? 0,
+    };
+    const totalNew = Object.values(badges).reduce((a, b) => a + b, 0);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [notice, setNotice] = useState<string | null>(null);
 
@@ -34,10 +38,10 @@ export default function AdminLayout({ title, children }: { title: string; childr
             {/* Mobile top bar */}
             <div className="md:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between">
                 <h2 className="text-xl font-black tracking-tighter uppercase italic">Admin Panel</h2>
-                <button onClick={() => setSidebarOpen(!sidebarOpen)} className="relative p-2 text-gray-600" aria-label={newOrders > 0 ? `Menu, ${newOrders} pesanan baru` : 'Menu'}>
+                <button onClick={() => setSidebarOpen(!sidebarOpen)} className="relative p-2 text-gray-600" aria-label={totalNew > 0 ? `Menu, ${totalNew} item baru` : 'Menu'}>
                     {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     {/* Sidebar is collapsed on mobile — surface the badge on the hamburger. */}
-                    {!sidebarOpen && newOrders > 0 && <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-green-500 rounded-full" />}
+                    {!sidebarOpen && totalNew > 0 && <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-green-500 rounded-full" />}
                 </button>
             </div>
 
@@ -53,7 +57,7 @@ export default function AdminLayout({ title, children }: { title: string; childr
                     {menu.map((item) => {
                         const Icon = item.icon;
                         const active = item.match.test(path);
-                        const badge = item.label === 'Orders' ? newOrders : 0;
+                        const badge = badges[item.label] ?? 0;
                         return (
                             <Link
                                 key={item.href}
@@ -66,7 +70,7 @@ export default function AdminLayout({ title, children }: { title: string; childr
                                 {badge > 0 && (
                                     <span
                                         className="min-w-5 h-5 px-1.5 flex items-center justify-center bg-green-500 text-white text-[11px] font-bold rounded-full"
-                                        aria-label={`${badge} pesanan baru`}
+                                        aria-label={`${badge} ${item.label.toLowerCase()} baru`}
                                     >
                                         {badge > 99 ? '99+' : badge}
                                     </span>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use App\Support\Csv;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
@@ -66,7 +67,6 @@ class DashboardController extends Controller
             ->all();
     }
 
-    /** ponytail: CSV, not xlsx — Excel opens it fine and it needs no PhpSpreadsheet. */
     public function exportOrders(Request $request): StreamedResponse
     {
         $month = $request->validate([
@@ -81,33 +81,23 @@ class DashboardController extends Controller
             ->orderBy('id')
             ->get();
 
-        return response()->streamDownload(function () use ($orders) {
-            $out = fopen('php://output', 'w');
-            fwrite($out, "\xEF\xBB\xBF"); // BOM so Excel reads UTF-8
-
-            $row = fn (array $cells) => fputcsv($out, $cells, ',', '"', '\\');
-
-            $row(['Order Number', 'Date', 'Customer', 'Phone', 'Email', 'Province', 'City', 'Address', 'Items', 'Status', 'Subtotal', 'Total']);
-
-            foreach ($orders as $o) {
-                $row([
-                    $o->order_number,
-                    $o->created_at->format('Y-m-d H:i'),
-                    $o->customer_name,
-                    $o->customer_phone,
-                    $o->customer_email,
-                    $o->province,
-                    $o->city,
-                    $o->shipping_address,
-                    $o->items->map(fn ($i) => "{$i->product_name} ({$i->variant_label}) x{$i->quantity}")->implode('; '),
-                    $o->status,
-                    $o->subtotal,
-                    $o->total,
-                ]);
-            }
-
-
-            fclose($out);
-        }, "orders-{$month}.csv", ['Content-Type' => 'text/csv; charset=UTF-8']);
+        return Csv::download(
+            "orders-{$month}.csv",
+            ['Order Number', 'Date', 'Customer', 'Phone', 'Email', 'Province', 'City', 'Address', 'Items', 'Status', 'Subtotal', 'Total'],
+            $orders->map(fn (Order $o) => [
+                $o->order_number,
+                $o->created_at->format('Y-m-d H:i'),
+                $o->customer_name,
+                $o->customer_phone,
+                $o->customer_email,
+                $o->province,
+                $o->city,
+                $o->shipping_address,
+                $o->items->map(fn ($i) => "{$i->product_name} ({$i->variant_label}) x{$i->quantity}")->implode('; '),
+                $o->status,
+                $o->subtotal,
+                $o->total,
+            ]),
+        );
     }
 }

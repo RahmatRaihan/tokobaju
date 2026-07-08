@@ -114,6 +114,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Customers
     Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers.index');
+    Route::get('/customers/export', [AdminCustomerController::class, 'export'])->name('customers.export');
+    Route::delete('/customers/{customer}', [AdminCustomerController::class, 'destroy'])->name('customers.destroy');
 
     // Settings + site content
     Route::get('/settings', [AdminSettingController::class, 'edit'])->name('settings.edit');
