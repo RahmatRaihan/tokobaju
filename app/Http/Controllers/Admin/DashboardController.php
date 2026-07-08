@@ -29,7 +29,7 @@ class DashboardController extends Controller
                 'products_count' => Product::count(),
             ],
             'sales_by_month' => $this->salesByMonth(),
-            'orders_by_status' => Order::selectRaw('status, COUNT(*) as c')->pluck('c', 'status'),
+            'orders_by_status' => Order::selectRaw('status, COUNT(*) as c')->groupBy('status')->pluck('c', 'status'),
             'recent_orders' => Order::latest()->take(5)->get()->map(fn (Order $o) => [
                 'id' => $o->id,
                 'order_number' => $o->order_number,
