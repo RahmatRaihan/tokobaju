@@ -19,7 +19,7 @@ export default function Home({ featured, hero }: HomeProps) {
             <Head title="Home" />
 
             {/* Hero */}
-            <div className="relative w-full h-[calc(100vh-96px)] bg-gray-900 overflow-hidden">
+            <div className="relative w-full h-screen bg-gray-900 overflow-hidden">
                 {hero.image && (
                     <img src={hero.image} alt={hero.heading} className="w-full h-full object-cover object-center opacity-90" />
                 )}

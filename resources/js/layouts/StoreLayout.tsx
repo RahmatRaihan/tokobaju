@@ -12,6 +12,8 @@ import { PageProps } from '@/types';
 function Chrome({ children }: { children: ReactNode }) {
     const { toast } = useUi();
     const { site } = usePage<PageProps>().props;
+    const { component } = usePage();
+    const isLanding = component === 'Home';
     const [showScrollTop, setShowScrollTop] = useState(false);
 
     useEffect(() => {
@@ -29,7 +31,9 @@ function Chrome({ children }: { children: ReactNode }) {
     return (
         <div className="min-h-screen bg-white font-sans text-black flex flex-col relative overflow-x-hidden">
             <Header />
-            <div className="flex-1 w-full flex flex-col">{children}</div>
+            {/* The navbar is fixed; the landing hero sits under it full-bleed,
+                other pages need top padding equal to the navbar height (h-24). */}
+            <div className={`flex-1 w-full flex flex-col ${isLanding ? '' : 'pt-24'}`}>{children}</div>
 
             <AnimatePresence>
                 {showScrollTop && (

@@ -16,8 +16,7 @@ export function Header() {
     const logout = () => router.post('/logout');
 
     // On the landing page only: gradually fade the navbar out as you scroll
-    // down — fully visible at the top, transparent (and gone) once past the
-    // hero. Opacity follows the scroll position for a smooth fade.
+    // down — fully visible at the top, transparent (and gone) past the hero.
     const isLanding = component === 'Home';
     const [opacity, setOpacity] = useState(1);
 
@@ -29,19 +28,29 @@ export function Header() {
         const FADE_START = 20; // px — start fading almost immediately
         const FADE_END = 260; // px — fully gone by here
         const onScroll = () => {
-            const y = window.scrollY;
+            // Read scroll position robustly across browsers/containers.
+            const y =
+                window.scrollY ||
+                window.pageYOffset ||
+                document.documentElement.scrollTop ||
+                document.body.scrollTop ||
+                0;
             const next = 1 - (y - FADE_START) / (FADE_END - FADE_START);
             setOpacity(Math.min(1, Math.max(0, next)));
         };
         onScroll();
         window.addEventListener('scroll', onScroll, { passive: true });
-        return () => window.removeEventListener('scroll', onScroll);
+        document.addEventListener('scroll', onScroll, { passive: true, capture: true });
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+            document.removeEventListener('scroll', onScroll, { capture: true } as EventListenerOptions);
+        };
     }, [isLanding]);
 
     return (
         <header
             style={{ opacity, transform: `translateY(${(1 - opacity) * -20}px)` }}
-            className={`sticky top-0 z-50 bg-white border-b border-gray-100 ${
+            className={`fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300 ${
                 opacity < 0.05 ? 'pointer-events-none' : ''
             }`}
         >
