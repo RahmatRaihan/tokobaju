@@ -15,28 +15,24 @@ export function Header() {
 
     const logout = () => router.post('/logout');
 
-    // On the landing page only: gradually fade the navbar out as you scroll
-    // down — fully visible at the top, transparent (and gone) past the hero.
+    // On the landing page only: as soon as the user starts scrolling, fade the
+    // navbar out entirely (not tied to scroll amount). It reappears at the top.
     const isLanding = component === 'Home';
-    const [opacity, setOpacity] = useState(1);
+    const [hidden, setHidden] = useState(false);
 
     useEffect(() => {
         if (!isLanding) {
-            setOpacity(1);
+            setHidden(false);
             return;
         }
-        const FADE_START = 20; // px — start fading almost immediately
-        const FADE_END = 260; // px — fully gone by here
         const onScroll = () => {
-            // Read scroll position robustly across browsers/containers.
             const y =
                 window.scrollY ||
                 window.pageYOffset ||
                 document.documentElement.scrollTop ||
                 document.body.scrollTop ||
                 0;
-            const next = 1 - (y - FADE_START) / (FADE_END - FADE_START);
-            setOpacity(Math.min(1, Math.max(0, next)));
+            setHidden(y > 10); // any scroll past the very top hides it
         };
         onScroll();
         window.addEventListener('scroll', onScroll, { passive: true });
@@ -49,9 +45,8 @@ export function Header() {
 
     return (
         <header
-            style={{ opacity, transform: `translateY(${(1 - opacity) * -20}px)` }}
-            className={`fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300 ${
-                opacity < 0.05 ? 'pointer-events-none' : ''
+            className={`fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-500 ${
+                hidden ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'
             }`}
         >
             <div className="relative max-w-[1400px] mx-auto px-4 lg:px-8 flex items-center justify-between h-24">
